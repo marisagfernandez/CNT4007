@@ -35,7 +35,7 @@ class Process{
     BitSet pieces;
     
     public Process(int id) throws Exception {
-        hosts = new ArrayList<>();
+        hosts = new ArrayList<Host>();
         
         readCommon(); //reads common.cfg file to init variables.
         
