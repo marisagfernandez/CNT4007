@@ -205,8 +205,11 @@ public class PeerProcess {
 				}
         	} else { //listen for an incoming connection
         		try {
+        			System.out.println("Listening for " + currentHost.hostname);
 					ServerSocket serverSocket = new ServerSocket(currentHost.port);
-					new Handler(currentHost, serverSocket.accept(), false);
+					
+					new Handler(currentHost, serverSocket.accept(), false).start();
+					System.out.println("Accepted");
 					serverSocket.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
