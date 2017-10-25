@@ -147,6 +147,7 @@ class Handler extends Thread{
 			this.outgoing = new ObjectOutputStream(socket.getOutputStream()); 
 			
 			outgoing.writeObject("Hello");
+			outgoing.flush();
 			String msg = (String)incoming.readObject();
 			System.out.println(msg);
 		} catch(IOException | ClassNotFoundException e){
