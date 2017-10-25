@@ -155,6 +155,8 @@ class Handler extends Thread{
 				outgoing.writeInt(msg.length());
 				outgoing.write(msg.getBytes());
 				
+				System.out.println("Wrote message");
+				
 
 				int length = incoming.readInt();
 				if (length > 0) {
