@@ -142,14 +142,25 @@ class Handler extends Thread{
 		this.initiator = initiator; //initiator is supposed to send first handshake?
 	}
 	public void run() {
+		System.out.println("Handler started for: " + host.hostname);
 		try {
 			this.incoming = new ObjectInputStream(socket.getInputStream());
 			this.outgoing = new ObjectOutputStream(socket.getOutputStream()); 
 			
-			outgoing.writeObject("Hello");
-			outgoing.flush();
-			String msg = (String)incoming.readObject();
-			System.out.println(msg);
+			if(initiator) {
+				outgoing.writeObject("Hello");
+				outgoing.flush();
+				System.out.println("incoming message: " + (String)incoming.readObject());
+			} else {
+				System.out.println("incoming message: " + (String)incoming.readObject());
+				outgoing.writeObject("Hello");
+				outgoing.flush();
+			}
+//			
+//			outgoing.writeObject("Hello");
+//			outgoing.flush();
+//			String msg = (String)incoming.readObject();
+//			System.out.println(msg);
 		} catch(IOException | ClassNotFoundException e){
 			
 			e.printStackTrace();
@@ -165,7 +176,7 @@ class Handler extends Thread{
 			}
 		
 		}
-		System.out.println("Handler started for: " + host.hostname);
+
 	}
 }
 public class PeerProcess {
