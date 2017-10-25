@@ -185,6 +185,8 @@ public class PeerProcess {
         	}
         	
         }
+        //end host loop
+        System.out.println("Finishing");
         
         
     }
