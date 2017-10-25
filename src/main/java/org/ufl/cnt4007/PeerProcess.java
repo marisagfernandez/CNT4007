@@ -159,9 +159,9 @@ class Handler extends Thread{
 				this.socket.close();
 				this.incoming.close();
 				this.outgoing.close();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		
 		}
