@@ -1,5 +1,8 @@
 package org.ufl.cnt4007;
+
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,11 +20,14 @@ class Host{
     int port;
     boolean hasFile;
     
-    ServerSocket sock;
     BitSet pieces;
 
+    public String toString() {
+    	return hostname + " " + port;
+    }
     
 }
+
 class Process{
     int prefNeighbors;
     int unchokingInterval;
@@ -48,8 +54,10 @@ class Process{
         if(this.id == -1){ //If the id isn't on the list, will still be -1.
             throw new Exception("id not in list");
         } 
+        //hosts arraylist now setup 
         
     }
+   
     private void readCommon() throws IOException{
         try{
             List<String> configLines = Files.readAllLines(Paths.get("Common.cfg"), Charset.forName("US-ASCII"));
@@ -105,9 +113,9 @@ class Process{
             }
             if(id == h.id){
                 //reading current host entry
-                //don't need to add to the hosts arraylist 
                 this.id = id;
                 this.pieces = h.pieces;
+                hosts.add(h); //need this here for now to separate list into who to connect to.
             } else {
                 //not current host
                 hosts.add(h);
@@ -121,8 +129,18 @@ class Process{
     }
     
 }
+class Handler extends Thread{
+	Host host;
+	ObjectOutputStream out;
+	ObjectInputStream in;
+	Socket socket;
+	Handler(Host h, Socket s){
+		this.host = h;
+		this.socket = s;
+	}
+}
 public class PeerProcess {
-    public static final boolean DEBUG = false; //
+    public static final boolean DEBUG = false;
     public static void main(String[] args) {
 
         System.out.println("Starting");
@@ -134,7 +152,40 @@ public class PeerProcess {
             e.printStackTrace();
             return;
         }
-        System.out.println("PeerProcess Initialized");
+        System.out.println("Config files read");
+        
+        //now do connections
+        boolean foundCurrent = false;
+        for(Host currentHost : p.hosts) {
+        	if(currentHost.id == p.id) {
+        		foundCurrent = true;
+        		continue; //don't connect if it's the same host
+        	}
+        	Socket socket;
+        	if(!foundCurrent) { //connect outwards
+        		try {
+					socket = new Socket(currentHost.hostname, currentHost.port);
+	        		new Handler(currentHost,socket).start();
+	        		
+				} catch (UnknownHostException e) {
+					System.out.println("Unable to find host " + currentHost);
+					return;
+				} catch (IOException e) {	
+					e.printStackTrace();
+					return;
+				}
+        	} else { //listen for an incoming connection
+        		
+        	}
+        	try {
+        		Socket s = new Socket(currentHost.hostname, currentHost.port);
+        		
+        	} catch (Exception e) {
+        		e.printStackTrace();
+        	}
+        	
+        }
+        
         
     }
     
