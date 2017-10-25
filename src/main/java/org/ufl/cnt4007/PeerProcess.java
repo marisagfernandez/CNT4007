@@ -214,12 +214,12 @@ public class PeerProcess {
         		
         		
         	}
-        	try {
-        		Socket s = new Socket(currentHost.hostname, currentHost.port);
-        		
-        	} catch (Exception e) {
-        		e.printStackTrace();
-        	}
+//        	try {
+//        		Socket s = new Socket(currentHost.hostname, currentHost.port);
+//        		
+//        	} catch (Exception e) {
+//        		e.printStackTrace();
+//        	}
         	
         }
         //end host loop
