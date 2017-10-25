@@ -207,6 +207,7 @@ public class PeerProcess {
         	if(!foundCurrent) { //connect outwards
         		try {
 					socket = new Socket(currentHost.hostname, currentHost.port);
+					socket.setTcpNoDelay(true);
 	        		new Handler(currentHost,socket, true).start();
 	        		
 				} catch (UnknownHostException e) {
@@ -220,8 +221,10 @@ public class PeerProcess {
         		try {
         			System.out.println("Listening for " + currentHost.hostname);
 					ServerSocket serverSocket = new ServerSocket(currentHost.port);
+					Socket temp = serverSocket.accept();
+					temp.setTcpNoDelay(true);
 					
-					new Handler(currentHost, serverSocket.accept(), false).start();
+					new Handler(currentHost, temp, false).start();
 					System.out.println("Accepted");
 					serverSocket.close();
 				} catch (IOException e) {
