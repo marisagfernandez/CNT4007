@@ -146,14 +146,16 @@ class Handler extends Thread{
 		try {
 			this.incoming = new ObjectInputStream(socket.getInputStream());
 			this.outgoing = new ObjectOutputStream(socket.getOutputStream()); 
-			
+			outgoing.flush();
+			String msg = "Hello";
 			if(initiator) {
-				outgoing.writeObject("Hello");
+			
+				outgoing.writeObject(msg);
 				outgoing.flush();
 				System.out.println("incoming message: " + (String)incoming.readObject());
 			} else {
 				System.out.println("incoming message: " + (String)incoming.readObject());
-				outgoing.writeObject("Hello");
+				outgoing.writeObject(msg);
 				outgoing.flush();
 			}
 //			
