@@ -1,41 +1,35 @@
 package org.ufl.cnt4007.packets;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.Base64.Encoder;
 import java.util.BitSet;
-import java.util.Base64;
-import java.util.Base64.Decoder;
+import java.nio.ByteBuffer;
+
 
 public class Handshake {
 
-	private String header;
-	private String asciiBits;
+	private byte[] header;
+	private byte[] zeroBits;
 	private int peerID;
 	
 	
-	private static Decoder decoder = Base64.getDecoder();
-	private static Encoder encoder = Base64.getEncoder();
-	
-	@JsonIgnore
-	private byte[] zeroBits;
-	
 	public Handshake(){
+		header = new byte[18];
+		zeroBits = new byte[10];
+	}
+	
+	public Handshake(byte[] header, byte[] zeroBits, int peerID){
+		this.header = header;
+		this.zeroBits = zeroBits;
+		this.peerID = peerID;
 		
 	}
-	
-	public Handshake(String header, String asciiBits, int peerID){
-		this.header = header;
-		this.peerID = peerID;
-		this.asciiBits = asciiBits;
-	}
 
 
-	public String getHeader() {
+	public byte[] getHeader() {
 		return header;
 	}
 
 
-	public void setHeader(String header) {
+	public void setHeader(byte[] header) {
 		this.header = header;
 	}
 
@@ -50,40 +44,43 @@ public class Handshake {
 	}
 
 
-	public String getAsciiBits() {
-		return asciiBits;
-	}
-
-
-	public void setAsciiBits(String asciiBits) {
-		this.asciiBits = asciiBits;
-	}
-
-
 	public synchronized byte[] getZeroBits() {
 		if (zeroBits != null){
 			return zeroBits;
 		}
-		
-		zeroBits = decoder.decode(this.asciiBits);
 		return zeroBits;
 	}
 
 
 	public synchronized void setZeroBits(byte[] zeroBits) {
 		this.zeroBits = zeroBits;
-		
-		this.asciiBits = encoder.encodeToString(this.zeroBits);
-		
-		
+
 	}
-	@JsonIgnore
+	
 	public synchronized void setBitSet(BitSet bitset){
 		this.setZeroBits(bitset.toByteArray());
 	}
-	@JsonIgnore
+	
 	public synchronized BitSet getBitSet(){
 		return BitSet.valueOf(getZeroBits());
+	}
+	
+	public ByteBuffer toByteBuffer() {
+		ByteBuffer byteBuffer = ByteBuffer.allocate(32);
+		byteBuffer.put(header);
+		byteBuffer.put(zeroBits);
+		byteBuffer.putInt(peerID);
+		return byteBuffer;
+		
+	}
+	
+	public static Handshake getHandshake(ByteBuffer byteBuffer){
+		Handshake handshake = new Handshake();
+		byte[] b = byteBuffer.array();
+		System.arraycopy(b, 0, handshake.getHeader(), 0, handshake.getHeader().length);
+		System.arraycopy(b, handshake.getHeader().length, handshake.getZeroBits(), 0, handshake.getZeroBits().length);
+		handshake.setPeerID(byteBuffer.getInt(handshake.getHeader().length + handshake.getZeroBits().length));
+		return handshake;
 	}
 
 
