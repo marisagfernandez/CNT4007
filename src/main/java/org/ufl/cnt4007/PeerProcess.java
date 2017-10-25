@@ -132,18 +132,24 @@ class Process{
 }
 class Handler extends Thread{
 	Host host;
-	ObjectOutputStream incoming;
-	ObjectInputStream outgoing;
+	ObjectInputStream incoming;
+	ObjectOutputStream outgoing;
 	Socket socket;
-	Handler(Host h, Socket s){
+	boolean initiator;
+	Handler(Host h, Socket s, boolean initator){
 		this.host = h;
 		this.socket = s;
+		this.initiator = initiator; //initiator is supposed to send first handshake?
 	}
 	public void run() {
 		try {
-			this.incoming = new ObjectOutputStream(socket.getOutputStream());
-			this.outgoing = new ObjectInputStream(socket.getInputStream()); 
-		} catch(IOException e){
+			this.incoming = new ObjectInputStream(socket.getInputStream());
+			this.outgoing = new ObjectOutputStream(socket.getOutputStream()); 
+			
+			outgoing.writeObject("Hello");
+			String msg = (String)incoming.readObject();
+			System.out.println(msg);
+		} catch(IOException | ClassNotFoundException e){
 			
 			e.printStackTrace();
 			
@@ -176,7 +182,7 @@ public class PeerProcess {
         }
         System.out.println("Config files read");
         
-        //now do connections
+        //now do connections -- should probably move this inside Process constructor and use try w/ resource
         boolean foundCurrent = false;
         for(Host currentHost : p.hosts) {
         	if(currentHost.id == p.id) {
@@ -187,7 +193,7 @@ public class PeerProcess {
         	if(!foundCurrent) { //connect outwards
         		try {
 					socket = new Socket(currentHost.hostname, currentHost.port);
-	        		new Handler(currentHost,socket).start();
+	        		new Handler(currentHost,socket, true).start();
 	        		
 				} catch (UnknownHostException e) {
 					System.out.println("Unable to find host " + currentHost);
@@ -197,6 +203,15 @@ public class PeerProcess {
 					return;
 				}
         	} else { //listen for an incoming connection
+        		try {
+					ServerSocket serverSocket = new ServerSocket(currentHost.port);
+					new Handler(currentHost, serverSocket.accept(), false);
+					serverSocket.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        		
         		
         	}
         	try {
