@@ -121,8 +121,9 @@ class Process{
                 hosts.add(h);
             }
             if(PeerProcess.DEBUG){
+            	System.out.println("Host tokenizing");
             for (String t : tokens){
-                System.out.println(t); //just checking tokenizing works
+                System.out.print(t + " "); //just checking tokenizing works
             }
             }
         }
@@ -131,12 +132,33 @@ class Process{
 }
 class Handler extends Thread{
 	Host host;
-	ObjectOutputStream out;
-	ObjectInputStream in;
+	ObjectOutputStream incoming;
+	ObjectInputStream outgoing;
 	Socket socket;
 	Handler(Host h, Socket s){
 		this.host = h;
 		this.socket = s;
+	}
+	public void run() {
+		try {
+			this.incoming = new ObjectOutputStream(socket.getOutputStream());
+			this.outgoing = new ObjectInputStream(socket.getInputStream()); 
+		} catch(IOException e){
+			
+			e.printStackTrace();
+			
+		}	finally {
+			try {
+				this.socket.close();
+				this.incoming.close();
+				this.outgoing.close();
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+			}
+		
+		}
+		System.out.println("Handler started for: " + host.hostname);
 	}
 }
 public class PeerProcess {
