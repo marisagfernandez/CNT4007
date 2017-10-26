@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
+
+import org.ufl.cnt4007.packets.Handshake;
+
 import java.net.*;
 
 
@@ -38,6 +41,7 @@ class Process{
     String fileName;
     long fileSize;
     long pieceSize;
+    
     ArrayList<Host> hosts;
     int listenPort;
     
@@ -171,79 +175,69 @@ class Process{
             }
         }
     }
-    
-}
-class Handler extends Thread{
-	Host host;
-	DataInputStream incoming;
-	DataOutputStream outgoing;
-	Socket socket;
-	boolean initiator;
-	Handler(Host h, Socket s, boolean initiator){
-		this.host = h;
-		this.socket = s;
-		this.initiator = initiator; //initiator is supposed to send first handshake? or can this be done async?
-	}
-	public void run() {
-		System.out.println("Handler started for: " + host.hostname);
-		try {
-			this.incoming = new DataInputStream(socket.getInputStream());
-			this.outgoing = new DataOutputStream(socket.getOutputStream()); 
-			outgoing.flush();
-			String msg = "Hello";
-			System.out.println("initiator is: " + this.initiator);
-			if(this.initiator) {
-				System.out.println("initiating connection");
-			
-				outgoing.writeInt(msg.length());
-				outgoing.write(msg.getBytes());
-				
-				System.out.println("Wrote message");
-				
+    class Handler extends Thread{
+    	Host host;
+    	DataInputStream incoming;
+    	DataOutputStream outgoing;
+    	Socket socket;
+    	boolean initiator;
+    	Handler(Host h, Socket s, boolean initiator){
+    		this.host = h;
+    		this.socket = s;
+    		this.initiator = initiator; //initiator is supposed to send first handshake? or can this be done async?
+    	}
+    	public void run() {
+    		System.out.println("Handler started for: " + host.hostname);
+    		try {
+    			this.incoming = new DataInputStream(socket.getInputStream());
+    			this.outgoing = new DataOutputStream(socket.getOutputStream()); 
+    			outgoing.flush();
+    			byte [] msg = Handshake.makeHandshake(id);
+    			//System.out.println("initiator is: " + this.initiator);
+    			if(this.initiator) {
+    				System.out.println("initiating connection");
+    			
+    				outgoing.writeInt(msg.length);
+    				outgoing.write(msg);
+    				
+    				System.out.println("Wrote message");
+    				
 
-				int length = incoming.readInt();
-				if (length > 0) {
-					byte[] message = new byte[length];
-					incoming.readFully(message, 0, message.length);
-					String sMsg = new String(message);
-					System.out.println("incoming: " + sMsg);
-				}
-				
-				//System.out.println("incoming message: " + (String)incoming.readObject());
-			} else {
-				int length = incoming.readInt();
-				if (length > 0) {
-					byte[] message = new byte[length];
-					incoming.readFully(message, 0, message.length);
-					String sMsg = new String(message);
-					System.out.println("incoming: " + sMsg);
-				}
-				outgoing.writeInt(msg.length());
-				outgoing.write(msg.getBytes());
-			}
-//			
-//			outgoing.writeObject("Hello");
-//			outgoing.flush();
-//			String msg = (String)incoming.readObject();
-//			System.out.println(msg);
-		} catch(IOException e){
-			
-			e.printStackTrace();
-			
-		}	finally {
-			try {
-				this.socket.close();
-				this.incoming.close();
-				this.outgoing.close();
-			} catch (Exception e) {
-				
-				//e.printStackTrace();
-			}
-		
-		}
+    				int length = incoming.readInt();
+    				if (length > 0) {
+    					byte[] message = new byte[length];
+    					incoming.readFully(message, 0, message.length);
+    					String sMsg = new String(message);
+    					System.out.println("incoming: " + sMsg);
+    				}
+    				
+    				//System.out.println("incoming message: " + (String)incoming.readObject());
+    			}
+//    			
+//    			outgoing.writeObject("Hello");
+//    			outgoing.flush();
+//    			String msg = (String)incoming.readObject();
+//    			System.out.println(msg);
+    		} catch(IOException e){
+    			
+    			e.printStackTrace();
+    			
+    		}	finally {
+    			try {
+    				this.socket.close();
+    				this.incoming.close();
+    				this.outgoing.close();
+    			} catch (Exception e) {
+    				
+    				//e.printStackTrace();
+    			}
+    		
+    		}
 
-	}
+    	}
+    }
 }
+
 public class PeerProcess {
     public static final boolean DEBUG = false;
     public static void main(String[] args) {
