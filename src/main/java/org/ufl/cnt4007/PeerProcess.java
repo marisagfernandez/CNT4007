@@ -1,5 +1,7 @@
 package org.ufl.cnt4007;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -132,8 +134,8 @@ class Process{
 }
 class Handler extends Thread{
 	Host host;
-	ObjectInputStream incoming;
-	ObjectOutputStream outgoing;
+	DataInputStream incoming;
+	DataOutputStream outgoing;
 	Socket socket;
 	boolean initiator;
 	Handler(Host h, Socket s, boolean initator){
@@ -144,19 +146,33 @@ class Handler extends Thread{
 	public void run() {
 		System.out.println("Handler started for: " + host.hostname);
 		try {
-			this.incoming = new ObjectInputStream(socket.getInputStream());
-			this.outgoing = new ObjectOutputStream(socket.getOutputStream()); 
+			this.incoming = new DataInputStream(socket.getInputStream());
+			this.outgoing = new DataOutputStream(socket.getOutputStream()); 
 			outgoing.flush();
 			String msg = "Hello";
 			if(initiator) {
 			
-				outgoing.writeObject(msg);
-				outgoing.flush();
+				outgoing.writeInt(msg.length());
+				outgoing.write(msg.getBytes());
+				
+
+				int length = incoming.readInt();
+				if (length > 0) {
+					byte[] message = new byte[length];
+					incoming.readFully(message, 0, message.length);
+					System.out.println("incoming: " + message);
+				}
+				
 				System.out.println("incoming message: " + (String)incoming.readObject());
 			} else {
-				System.out.println("incoming message: " + (String)incoming.readObject());
-				outgoing.writeObject(msg);
-				outgoing.flush();
+				int length = incoming.readInt();
+				if (length > 0) {
+					byte[] message = new byte[length];
+					incoming.readFully(message, 0, message.length);
+					System.out.println("incoming: " + message);
+				}
+				outgoing.writeInt(msg.length());
+				outgoing.write(msg.getBytes());
 			}
 //			
 //			outgoing.writeObject("Hello");
