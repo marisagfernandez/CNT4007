@@ -208,7 +208,7 @@ class Process{
     					byte[] message = new byte[length];
     					incoming.readFully(message, 0, message.length);
     					String sMsg = new String(message);
-    					System.out.println("incoming: " + sMsg);
+    					System.out.println(message);
     				}
     				
     				//System.out.println("incoming message: " + (String)incoming.readObject());
