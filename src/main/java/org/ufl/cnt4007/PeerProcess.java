@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 
 
-import org.ufl.cnt4007.packets.Handshake;
 
 import java.net.*;
 
@@ -191,8 +190,8 @@ class Process{
     			this.incoming = new DataInputStream(socket.getInputStream());
     			this.outgoing = new DataOutputStream(socket.getOutputStream()); 
     			outgoing.flush();
-    			Handshake h = new Handshake();
-    			byte [] msg = h.makeHandshake(id);
+    			//Handshake h = new Handshake();
+    			byte [] msg = Handshake.makeHandshake(id);
     			//System.out.println("initiator is: " + this.initiator);
     			if(this.initiator) {
     				System.out.println("initiating connection");
