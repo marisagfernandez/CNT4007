@@ -91,7 +91,7 @@ class Process{
     			Socket tempSocket = ss.accept();
     			tempSocket.setTcpNoDelay(true);
     			
-    			new Handler(host,tempSocket,false);
+    			new Handler(host,tempSocket,true);
 
     		}
     	} catch (IOException e) {
