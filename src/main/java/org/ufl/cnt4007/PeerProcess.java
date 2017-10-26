@@ -3,8 +3,6 @@ package org.ufl.cnt4007;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -13,7 +11,8 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ufl.cnt4007.*;
+
+import org.ufl.cnt4007.packets.Handshake;
 
 import java.net.*;
 
@@ -192,7 +191,8 @@ class Process{
     			this.incoming = new DataInputStream(socket.getInputStream());
     			this.outgoing = new DataOutputStream(socket.getOutputStream()); 
     			outgoing.flush();
-    			byte [] msg = Handshake.makeHandshake(id);
+    			Handshake h = new Handshake();
+    			byte [] msg = h.makeHandshake(id);
     			//System.out.println("initiator is: " + this.initiator);
     			if(this.initiator) {
     				System.out.println("initiating connection");
