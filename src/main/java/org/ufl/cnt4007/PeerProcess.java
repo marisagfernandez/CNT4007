@@ -138,7 +138,7 @@ class Handler extends Thread{
 	DataOutputStream outgoing;
 	Socket socket;
 	boolean initiator;
-	Handler(Host h, Socket s, boolean initator){
+	Handler(Host h, Socket s, boolean initiator){
 		this.host = h;
 		this.socket = s;
 		this.initiator = initiator; //initiator is supposed to send first handshake?
@@ -150,7 +150,8 @@ class Handler extends Thread{
 			this.outgoing = new DataOutputStream(socket.getOutputStream()); 
 			outgoing.flush();
 			String msg = "Hello";
-			if(initiator) {
+			System.out.println("initiator is: " + this.initiator);
+			if(this.initiator) {
 				System.out.println("initiating connection");
 			
 				outgoing.writeInt(msg.length());
