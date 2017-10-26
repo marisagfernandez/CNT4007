@@ -13,34 +13,36 @@ public class ActualMsg {
 	public static final byte REQUEST = 6;
 	public static final byte PIECE = 7;
 	
-	private int length;
-	private int type;
+	private byte[] length;
+	private byte[] type;
 	private byte[] payload;
 	
 
 	public ActualMsg(){
-		
+		length = new byte[4];
+		type = new byte[1];
+		//payload = newbyte[]
 	}
 	
-	public ActualMsg(int length, int type, byte[] payload){
+	public ActualMsg(byte[] length, byte[] type, byte[] payload){
 		this.length = length;
 		this.type = type;
 		this.payload = payload;
 	}
 	
-	public int getLength() {
+	public byte[] getLength() {
 		return length;
 	}
 
-	public void setLength(int length) {
+	public void setLength(byte[] length) {
 		this.length = length;
 	}
 
-	public synchronized int getType() {
+	public synchronized byte[] getType() {
 		return type;
 	}
 
-	public synchronized void setType(int type) {
+	public synchronized void setType(byte[] type) {
 		this.type = type;
 	}
 
@@ -57,8 +59,8 @@ public class ActualMsg {
 
 	public ByteBuffer toByteBuffer() {
 		ByteBuffer byteBuffer = ByteBuffer.allocate(32);
-		byteBuffer.putInt(length);
-		byteBuffer.putInt(type);
+		byteBuffer.put(length);
+		byteBuffer.put(type);
 		byteBuffer.put(payload);
 		return byteBuffer;
 		
