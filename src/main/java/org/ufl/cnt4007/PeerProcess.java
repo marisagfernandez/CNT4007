@@ -151,6 +151,7 @@ class Handler extends Thread{
 			outgoing.flush();
 			String msg = "Hello";
 			if(initiator) {
+				System.out.println("initiating connection");
 			
 				outgoing.writeInt(msg.length());
 				outgoing.write(msg.getBytes());
