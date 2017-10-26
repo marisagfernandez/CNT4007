@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Iterator;
 import java.util.List;
 import java.net.*;
 
@@ -38,6 +39,7 @@ class Process{
     long fileSize;
     long pieceSize;
     ArrayList<Host> hosts;
+    int listenPort;
     
     int id;
     BitSet pieces;
@@ -58,8 +60,45 @@ class Process{
         } 
         //hosts arraylist now setup 
         
+        //now need to make connections
+        doConnects();
+        
+        
     }
-   
+    private void doConnects() {
+    	
+    	Iterator<Host> it = this.hosts.iterator();
+    	while(it.hasNext()) {
+    		Host h = it.next();
+    		if(h.id == this.id) {
+    			break;
+    		}
+    		try {
+    			Socket socket = new Socket(h.hostname, h.port);
+    			socket.setTcpNoDelay(true);
+    			new Handler(h,socket, true).start();
+    		} catch (UnknownHostException e) {
+    			System.out.println("Unable to connect to host : " + h.hostname);
+    		} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	try(ServerSocket ss = new ServerSocket(this.listenPort)){
+    		while(it.hasNext()) {
+    			Host h = it.next();
+    			Socket t = ss.accept();
+    			t.setTcpNoDelay(true);
+    			
+    			new Handler(h,t,false);
+
+    		}
+    	} catch (IOException e) {
+			// TODO Auto-generated catch block
+    		//shouldn't reach here, look into adding code to fix if it does
+			e.printStackTrace();
+		}
+    }
     private void readCommon() throws IOException{
         try{
             List<String> configLines = Files.readAllLines(Paths.get("Common.cfg"), Charset.forName("US-ASCII"));
@@ -117,6 +156,7 @@ class Process{
                 //reading current host entry
                 this.id = id;
                 this.pieces = h.pieces;
+                this.listenPort = h.port;
                 hosts.add(h); //need this here for now to separate list into who to connect to.
             } else {
                 //not current host
@@ -219,51 +259,7 @@ public class PeerProcess {
         System.out.println("Config files read");
         
         //now do connections -- should probably move this inside Process constructor and use try w/ resource
-        boolean foundCurrent = false;
-        for(Host currentHost : p.hosts) {
-        	if(currentHost.id == p.id) {
-        		foundCurrent = true;
-        		continue; //don't connect if it's the same host
-        	}
-        	Socket socket;
-        	if(!foundCurrent) { //connect outwards
-        		try {
-					socket = new Socket(currentHost.hostname, currentHost.port);
-					socket.setTcpNoDelay(true);
-	        		new Handler(currentHost,socket, true).start();
-	        		
-				} catch (UnknownHostException e) {
-					System.out.println("Unable to find host " + currentHost);
-					return;
-				} catch (IOException e) {	
-					e.printStackTrace();
-					return;
-				}
-        	} else { //listen for an incoming connection
-        		try {
-        			System.out.println("Listening for " + currentHost.hostname);
-					ServerSocket serverSocket = new ServerSocket(currentHost.port);
-					Socket temp = serverSocket.accept();
-					temp.setTcpNoDelay(true);
-					
-					new Handler(currentHost, temp, false).start();
-					System.out.println("Accepted");
-					serverSocket.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-        		
-        		
-        	}
-//        	try {
-//        		Socket s = new Socket(currentHost.hostname, currentHost.port);
-//        		
-//        	} catch (Exception e) {
-//        		e.printStackTrace();
-//        	}
-        	
-        }
+        
         //end host loop
         System.out.println("Finishing");
         
