@@ -163,7 +163,7 @@ class Handler extends Thread{
 					System.out.println("incoming: " + message);
 				}
 				
-				System.out.println("incoming message: " + (String)incoming.readObject());
+				//System.out.println("incoming message: " + (String)incoming.readObject());
 			} else {
 				int length = incoming.readInt();
 				if (length > 0) {
@@ -179,7 +179,7 @@ class Handler extends Thread{
 //			outgoing.flush();
 //			String msg = (String)incoming.readObject();
 //			System.out.println(msg);
-		} catch(IOException | ClassNotFoundException e){
+		} catch(IOException e){
 			
 			e.printStackTrace();
 			
