@@ -62,6 +62,7 @@ class Process{
         
         //now need to make connections
         doConnects();
+        //connections are now made, threads are setup and 
         
         
     }
@@ -69,16 +70,16 @@ class Process{
     	
     	Iterator<Host> it = this.hosts.iterator();
     	while(it.hasNext()) {
-    		Host h = it.next();
-    		if(h.id == this.id) {
+    		Host host = it.next();
+    		if(host.id == this.id) {
     			break;
     		}
     		try {
-    			Socket socket = new Socket(h.hostname, h.port);
+    			Socket socket = new Socket(host.hostname, host.port);
     			socket.setTcpNoDelay(true);
-    			new Handler(h,socket, true).start();
+    			new Handler(host,socket, true).start();
     		} catch (UnknownHostException e) {
-    			System.out.println("Unable to connect to host : " + h.hostname);
+    			System.out.println("Unable to connect to host : " + host.hostname);
     		} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -86,11 +87,11 @@ class Process{
     	}
     	try(ServerSocket ss = new ServerSocket(this.listenPort)){
     		while(it.hasNext()) {
-    			Host h = it.next();
-    			Socket t = ss.accept();
-    			t.setTcpNoDelay(true);
+    			Host host = it.next();
+    			Socket tempSocket = ss.accept();
+    			tempSocket.setTcpNoDelay(true);
     			
-    			new Handler(h,t,false);
+    			new Handler(host,tempSocket,false);
 
     		}
     	} catch (IOException e) {
@@ -181,7 +182,7 @@ class Handler extends Thread{
 	Handler(Host h, Socket s, boolean initiator){
 		this.host = h;
 		this.socket = s;
-		this.initiator = initiator; //initiator is supposed to send first handshake?
+		this.initiator = initiator; //initiator is supposed to send first handshake? or can this be done async?
 	}
 	public void run() {
 		System.out.println("Handler started for: " + host.hostname);

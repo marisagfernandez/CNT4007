@@ -5,19 +5,23 @@ import java.nio.ByteBuffer;
 
 
 public class Handshake {
+	
+	private static final byte[] header = "P2PFILESHARINGPROJ".getBytes();
+	private static final byte[] zeroBytes = {0,0,0,0,0,0,0,0,0,0};
+	
 
-	private byte[] header;
+	//private byte[] header;
 	private byte[] zeroBits;
 	private int peerID;
 	
 	
 	public Handshake(){
-		header = new byte[18];
+		//header = new byte[18];
 		zeroBits = new byte[10];
 	}
 	
 	public Handshake(byte[] header, byte[] zeroBits, int peerID){
-		this.header = header;
+		//this.header = header;
 		this.zeroBits = zeroBits;
 		this.peerID = peerID;
 		
@@ -30,7 +34,7 @@ public class Handshake {
 
 
 	public void setHeader(byte[] header) {
-		this.header = header;
+		//this.header = header;
 	}
 
 
@@ -65,7 +69,13 @@ public class Handshake {
 		return byteBuffer;
 		
 	}
-	
+	public static byte[] makeHandshake(int id) {
+		ByteBuffer bytes = ByteBuffer.allocate(32);
+		bytes.put(header);
+		bytes.put(zeroBytes);
+		bytes.putInt(id);
+		return bytes.array();
+	}
 	public static Handshake getHandshake(ByteBuffer byteBuffer){
 		Handshake handshake = new Handshake();
 		byte[] b = byteBuffer.array();
