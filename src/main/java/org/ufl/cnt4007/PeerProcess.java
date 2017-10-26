@@ -164,7 +164,8 @@ class Handler extends Thread{
 				if (length > 0) {
 					byte[] message = new byte[length];
 					incoming.readFully(message, 0, message.length);
-					System.out.println("incoming: " + message);
+					String sMsg = new String(message);
+					System.out.println("incoming: " + sMsg);
 				}
 				
 				//System.out.println("incoming message: " + (String)incoming.readObject());
@@ -173,7 +174,8 @@ class Handler extends Thread{
 				if (length > 0) {
 					byte[] message = new byte[length];
 					incoming.readFully(message, 0, message.length);
-					System.out.println("incoming: " + message);
+					String sMsg = new String(message);
+					System.out.println("incoming: " + sMsg);
 				}
 				outgoing.writeInt(msg.length());
 				outgoing.write(msg.getBytes());
