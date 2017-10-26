@@ -59,11 +59,6 @@ public class Utils {
 		}
 		System.out.println(h.getPeerID());
 		
-		
-		
-		
-		
-		
 	}
 		
 }

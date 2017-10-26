@@ -57,14 +57,6 @@ public class Handshake {
 
 	}
 	
-	public synchronized void setBitSet(BitSet bitset){
-		this.setZeroBits(bitset.toByteArray());
-	}
-	
-	public synchronized BitSet getBitSet(){
-		return BitSet.valueOf(getZeroBits());
-	}
-	
 	public ByteBuffer toByteBuffer() {
 		ByteBuffer byteBuffer = ByteBuffer.allocate(32);
 		byteBuffer.put(header);
@@ -83,5 +75,5 @@ public class Handshake {
 		return handshake;
 	}
 
-
+	
 }

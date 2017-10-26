@@ -1,10 +1,6 @@
 package org.ufl.cnt4007.packets;
 
-import java.util.Base64;
-import java.util.Base64.Decoder;
-import java.util.Base64.Encoder;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.nio.ByteBuffer;
 
 public class ActualMsg {
 
@@ -18,20 +14,20 @@ public class ActualMsg {
 	public static final byte PIECE = 7;
 	
 	private int length;
-	private String asciiType;
-	private String acsiiPayload;
-	
-	@JsonIgnore
-	private byte[] type;
-	
-	@JsonIgnore
+	private int type;
 	private byte[] payload;
 	
-	private static Decoder decoder = Base64.getDecoder();
-	private static Encoder encoder = Base64.getEncoder();
-	
-	
 
+	public ActualMsg(){
+		
+	}
+	
+	public ActualMsg(int length, int type, byte[] payload){
+		this.length = length;
+		this.type = type;
+		this.payload = payload;
+	}
+	
 	public int getLength() {
 		return length;
 	}
@@ -40,49 +36,47 @@ public class ActualMsg {
 		this.length = length;
 	}
 
-	public String getAsciiType() {
-		return asciiType;
-	}
-
-	public void setAsciiType(String asciiType) {
-		this.asciiType = asciiType;
-	}
-
-	public String getAcsiiPayload() {
-		return acsiiPayload;
-	}
-
-	public void setAcsiiPayload(String acsiiPayload) {
-		this.acsiiPayload = acsiiPayload;
-	}
-
-	public synchronized byte[] getType() {
-		if(type != null){
-			return type;
-		}
-		
-		type = decoder.decode(this.asciiType);
+	public synchronized int getType() {
 		return type;
 	}
 
-	public synchronized void setType(byte[] type) {
+	public synchronized void setType(int type) {
 		this.type = type;
-		this.asciiType = encoder.encodeToString(type);
 	}
 
 	public synchronized byte[] getPayload() {
 		if(payload != null){
 			return payload;
 		}
-		payload = decoder.decode(this.acsiiPayload);
 		return payload;
 	}
 
 	public synchronized void setPayload(byte[] payload) {
 		this.payload = payload;
-		this.acsiiPayload = encoder.encodeToString(payload);
 	}
 
+	public ByteBuffer toByteBuffer() {
+		ByteBuffer byteBuffer = ByteBuffer.allocate(32);
+		byteBuffer.putInt(length);
+		byteBuffer.putInt(type);
+		byteBuffer.put(payload);
+		return byteBuffer;
+		
+	}
+	
+	public static ActualMsg getActualMsg(ByteBuffer byteBuffer){
+		ActualMsg actualMsg = new ActualMsg();
+		byte[] b = byteBuffer.array();
+		//Take byte[] and set actualMsg
+		
+		
+		
+		
+		
+		return actualMsg;
+	}
+	
+	
 
 }
 
