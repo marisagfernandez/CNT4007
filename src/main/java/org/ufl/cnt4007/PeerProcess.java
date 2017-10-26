@@ -13,7 +13,7 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ufl.cnt4007.packets.Handshake;
+import org.ufl.cnt4007.*;
 
 import java.net.*;
 
