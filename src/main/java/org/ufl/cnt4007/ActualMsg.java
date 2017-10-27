@@ -17,7 +17,7 @@ public class ActualMsg {
 	private final Type[] typeValues = Type.values();
 	private int length;
 	private Type msgType;
-	private byte[] payload;
+	public byte[] payload;
 	
 	
 	public ActualMsg(byte[] payload) {
