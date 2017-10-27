@@ -101,7 +101,7 @@ public class ActualMsg {
 	}
 	public static byte[] makeBitfield(BitSet payload) {
 		
-		ByteBuffer bytes = ByteBuffer.allocate(5 + payload.length());	
+		ByteBuffer bytes = ByteBuffer.allocate(5 + (payload.size() / 8));	
 		//Add length
 		bytes.putInt(1 + payload.length());
 		bytes.put(Type.BITFIELD.typeNum);
