@@ -292,8 +292,9 @@ class Process{
 				System.out.println("Done printing out byte field");
 				
 				//now enter official while loop
+				int i = 0;
 				while(true) {
-					int i = 0;
+				
 					//check for messages to send from main process
 					while(!msgQ.isEmpty()) {
 						send(msgQ.poll());
