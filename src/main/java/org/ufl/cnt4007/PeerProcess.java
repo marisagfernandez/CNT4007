@@ -306,6 +306,9 @@ class Process{
 					//check for incoming messages
 					if(incoming.available() > 0) {
 						byte[] recv = receive();
+						if (recv == null) { //TODO: pull msg receiving into another function
+							continue;
+						}
 						ActualMsg m = new ActualMsg(recv);
 						ActualMsg.Type msgType = m.getMsgType();
 						
