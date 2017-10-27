@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import org.ufl.cnt4007.Handshake;
 
@@ -30,7 +31,6 @@ class Host{
 	public String toString() {
 		return hostname + " " + port;
 	}
-
 }
 
 class Process{
@@ -42,6 +42,7 @@ class Process{
 	long pieceSize;
 
 	ArrayList<Host> hosts;
+	private ArrayList<Handler> handlers;
 	int listenPort;
 
 	int id;
@@ -66,7 +67,24 @@ class Process{
 	}
 	public void start() {
 		doConnects();
+		
 		//threads are running
+		
+		//now need to handle passing info to threads/
+		//What needs handled...?
+		//When a piece finishes downloading.. need all threads to send have message
+		
+		
+	}
+	private synchronized void hasField(int f) {
+		//create the message to be sent and then run notify peers
+		byte[] msg = {1,1,2,3,5};
+		notifyPeers(msg);
+	}
+	private void notifyPeers(byte[] msg) {
+		for (Handler h : handlers) {
+			h.addMessage(msg);
+		}
 	}
 	private void doConnects() {
 
@@ -79,7 +97,10 @@ class Process{
 			try {
 				Socket socket = new Socket(host.hostname, host.port);
 				socket.setTcpNoDelay(true);
-				new Handler(host,socket, true).start();
+				Handler handler = new Handler(host,socket, true);
+				handler.start();
+				handlers.add(handler);
+				
 			} catch (UnknownHostException e) {
 				System.out.println("Unable to connect to host : " + host.hostname);
 			} catch (IOException e) {
@@ -93,7 +114,9 @@ class Process{
 				Socket tempSocket = ss.accept();
 				tempSocket.setTcpNoDelay(true);
 
-				new Handler(host,tempSocket,true).start();
+				Handler handler = new Handler(host,tempSocket,true);
+				handler.start();
+				handlers.add(handler);
 
 			}
 		} catch (IOException e) {
@@ -136,6 +159,7 @@ class Process{
 		}
 
 	}
+	
 	private void readPeers(int id) throws IOException{
 		List<String> peerLines = Files.readAllLines(Paths.get("PeerInfo.cfg"), Charset.forName("US-ASCII"));
 		for(String line : peerLines){
@@ -174,12 +198,14 @@ class Process{
 		}
 	}
 	class Handler extends Thread{
+		Queue<byte[]> msgQ;
 		Host host;
 		DataInputStream incoming;
 		DataOutputStream outgoing;
 		Socket socket;
 		boolean initiator;
 		Handler(Host h, Socket s, boolean initiator){
+			msgQ = new ArrayBlockingQueue(1024); //arbitrarily chosen
 			this.host = h;
 			this.socket = s;
 			this.initiator = initiator; //initiator is supposed to send first handshake? or can this be done async?	
@@ -191,6 +217,9 @@ class Process{
 				
 				e.printStackTrace();
 			} 
+		}
+		void addMessage(byte [] msg) {
+			msgQ.add(msg);
 		}
 		private void send(byte[] data) {
 			try {
@@ -226,6 +255,26 @@ class Process{
 				}
 
 				System.out.println("Wrote message");
+				//now send and accept bitfield
+				
+				
+				
+				//now enter official while loop
+				while(true) {
+					int i = 0;
+					//check for messages to send from main process
+					while(!msgQ.isEmpty()) {
+						send(msgQ.poll());
+					}
+					//otherwise check for choke/unchoke
+					
+					//otherwise check for incoming message
+					
+					if(++i > 1000) {
+						System.out.println("temporary action loop done");
+						break;
+					}
+				}
 
 
 				//System.out.println("incoming message: " + (String)incoming.readObject());
