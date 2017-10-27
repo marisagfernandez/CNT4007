@@ -23,7 +23,7 @@ public class ActualMsg {
 	public ActualMsg(byte[] payload) {
 		ByteBuffer bytes = ByteBuffer.wrap(payload);
 		this.msgType = typeValues[bytes.get()];
-		bytes.get(this.payload,bytes.position(),bytes.remaining()); //loads remaining bytes into this.payload
+		bytes.put(this.payload,bytes.position(),bytes.remaining()); //loads remaining bytes into this.payload
 		
 	}
 	public Type getMsgType() {
