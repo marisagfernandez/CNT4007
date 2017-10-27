@@ -225,7 +225,7 @@ class Process{
 
 				send(Handshake.makeHandshake(id));
 				
-				byte[] recv = receive();
+				byte[] recv = receive(); //can block
 				if(recv != null) {
 					//validate handshake
 				}
