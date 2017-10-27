@@ -206,7 +206,7 @@ class Process{
 		Socket socket;
 		boolean initiator;
 		Handler(Host h, Socket s, boolean initiator){
-			msgQ = new ArrayBlockingQueue(1024); //arbitrarily chosen
+			msgQ = new ArrayBlockingQueue<byte[]>(1024); //arbitrarily chosen
 			this.host = h;
 			this.socket = s;
 			this.initiator = initiator; //initiator is supposed to send first handshake? or can this be done async?	
