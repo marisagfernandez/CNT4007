@@ -1,31 +1,28 @@
 package org.ufl.cnt4007.packets;
 
 import java.nio.ByteBuffer;
+import java.util.BitSet;
 
 public class ActualMsg {
 
-	public static final byte CHOKE = 0;
-	public static final byte UNCHOKE = 1;
-	public static final byte INTERESTED = 2;
-	public static final byte NONINTERESTED = 3;
-	public static final byte HAVE = 4;
-	public static final byte BITFIELD = 5;
-	public static final byte REQUEST = 6;
-	public static final byte PIECE = 7;
-	
-	private int length;
-	private int type;
-	private byte[] payload;
-	
-
-	public ActualMsg(){
+	public enum Type{
+		CHOKE(0), UNCHOKE(1), INTERESTED(2), NONINTERESTED(3), HAVE(4), BITFIELD(5), REQUEST(6), PIECE(7); 
+		
+		private final int typeNum;
+		Type(int typeNum){
+			this.typeNum = typeNum;
+		}
 		
 	}
 	
-	public ActualMsg(int length, int type, byte[] payload){
+	private int length;
+	//private byte[] type;
+	//private byte[] payload;
+
+	
+	public ActualMsg(int length, int type){
 		this.length = length;
-		this.type = type;
-		this.payload = payload;
+		//this.payload = payload;
 	}
 	
 	public int getLength() {
@@ -36,47 +33,85 @@ public class ActualMsg {
 		this.length = length;
 	}
 
-	public synchronized int getType() {
-		return type;
-	}
-
-	public synchronized void setType(int type) {
-		this.type = type;
-	}
-
-	public synchronized byte[] getPayload() {
-		if(payload != null){
-			return payload;
-		}
-		return payload;
-	}
-
-	public synchronized void setPayload(byte[] payload) {
-		this.payload = payload;
-	}
-
-	public ByteBuffer toByteBuffer() {
-		ByteBuffer byteBuffer = ByteBuffer.allocate(32);
-		byteBuffer.putInt(length);
-		byteBuffer.putInt(type);
-		byteBuffer.put(payload);
-		return byteBuffer;
+//	public synchronized byte[] getPayload() {
+//		if(payload != null){
+//			return payload;
+//		}
+//		return payload;
+//	}
+//
+//	public synchronized void setPayload(byte[] payload) {
+//		this.payload = payload;
+//	}
+	
+	public byte[] makeChoke() {
+		ByteBuffer bytes = ByteBuffer.allocate(5);
+		bytes.putInt(length);
+		bytes.putInt(Type.CHOKE.typeNum);
 		
+		return bytes.array();
 	}
 	
-	public static ActualMsg getActualMsg(ByteBuffer byteBuffer){
-		ActualMsg actualMsg = new ActualMsg();
-		byte[] b = byteBuffer.array();
-		//Take byte[] and set actualMsg
+	public byte[] makeUnchoke() {
+		ByteBuffer bytes = ByteBuffer.allocate(5);
+		bytes.putInt(length);
+		bytes.putInt(Type.UNCHOKE.typeNum);
 		
+		return bytes.array();
+	}
+	public byte[] makeInterested() {
+		ByteBuffer bytes = ByteBuffer.allocate(5);
+		bytes.putInt(length);
+		bytes.putInt(Type.INTERESTED.typeNum);
 		
+		return bytes.array();
+	}
+	public byte[] makeNotInterested() {
+		ByteBuffer bytes = ByteBuffer.allocate(5);
+		bytes.putInt(length);
+		bytes.putInt(Type.NONINTERESTED.typeNum);
 		
-		
-		
-		return actualMsg;
+		return bytes.array();
 	}
 	
-	
+	public byte[] makeHave(byte[] payload) {
+		
+		ByteBuffer bytes = ByteBuffer.allocate(4 + length);
+		bytes.putInt(length);
+		bytes.putInt(Type.HAVE.typeNum);
+		bytes.put(payload);
+		
+		return bytes.array();
+	}
+	public byte[] makeBitfield(BitSet payload) {
+		
+		ByteBuffer bytes = ByteBuffer.allocate(4 + length);
+		bytes.putInt(length);
+		bytes.putInt(Type.BITFIELD.typeNum);
+		byte[] b = payload.toByteArray();
+		bytes.put(b);
+		
+		return bytes.array();
+	}
+	public byte[] makeRequest(int payload) {
+		
+		ByteBuffer bytes = ByteBuffer.allocate(4 + length);
+		bytes.putInt(length);
+		bytes.putInt(Type.REQUEST.typeNum);
+		bytes.putInt(payload);
+		
+		return bytes.array();
+	}
+	public byte[] makePiece(int index, byte[] payload) {
+		
+		ByteBuffer bytes = ByteBuffer.allocate(4 + length);
+		bytes.putInt(length);
+		bytes.putInt(Type.PIECE.typeNum);
+		bytes.putInt(index);
+		bytes.put(payload);
+		
+		return bytes.array();
+	}
 
 }
 
