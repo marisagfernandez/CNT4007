@@ -44,48 +44,54 @@ public class ActualMsg {
 //		this.payload = payload;
 //	}
 	
-	public byte[] makeChoke() {
+	public static byte[] makeChoke() {
 		ByteBuffer bytes = ByteBuffer.allocate(5);
+		//Add length
 		bytes.putInt(1);
 		bytes.put(Type.CHOKE.typeNum);
 		
 		return bytes.array();
 	}
 	
-	public byte[] makeUnchoke() {
+	public static byte[] makeUnchoke() {
 		ByteBuffer bytes = ByteBuffer.allocate(5);
+		//Add length
 		bytes.putInt(1);
 		bytes.put(Type.UNCHOKE.typeNum);
 		
 		return bytes.array();
 	}
-	public byte[] makeInterested() {
+	public static byte[] makeInterested() {
 		ByteBuffer bytes = ByteBuffer.allocate(5);
+		//Add length
 		bytes.putInt(1);
 		bytes.put(Type.INTERESTED.typeNum);
 		
 		return bytes.array();
 	}
-	public byte[] makeNotInterested() {
+	public static byte[] makeNotInterested() {
 		ByteBuffer bytes = ByteBuffer.allocate(5);
+		//Add length
 		bytes.putInt(1);
 		bytes.put(Type.NONINTERESTED.typeNum);
 		
 		return bytes.array();
 	}
 	
-	public byte[] makeHave(int payload) {
+	public static byte[] makeHave(int payload) {
 		
-		ByteBuffer bytes = ByteBuffer.allocate(4 + length);
+		ByteBuffer bytes = ByteBuffer.allocate(9);
+		//Add length
 		bytes.putInt(5);
 		bytes.put(Type.HAVE.typeNum);
 		bytes.putInt(payload);
 		
 		return bytes.array();
 	}
-	public byte[] makeBitfield(BitSet payload) {
+	public static byte[] makeBitfield(BitSet payload) {
 		
-		ByteBuffer bytes = ByteBuffer.allocate(4 + length);	
+		ByteBuffer bytes = ByteBuffer.allocate(5 + payload.length());	
+		//Add length
 		bytes.putInt(1 + payload.length());
 		bytes.put(Type.BITFIELD.typeNum);
 		byte[] b = payload.toByteArray();
@@ -93,18 +99,20 @@ public class ActualMsg {
 		
 		return bytes.array();
 	}
-	public byte[] makeRequest(int payload) {
+	public static byte[] makeRequest(int payload) {
 		
-		ByteBuffer bytes = ByteBuffer.allocate(4 + length);
+		ByteBuffer bytes = ByteBuffer.allocate(5 + payload);
+		//Add length
 		bytes.putInt(1 + payload);
 		bytes.put(Type.REQUEST.typeNum);
 		bytes.putInt(payload);
 		
 		return bytes.array();
 	}
-	public byte[] makePiece(int index, byte[] payload) {
+	public static byte[] makePiece(int index, byte[] payload) {
 		
-		ByteBuffer bytes = ByteBuffer.allocate(4 + length);
+		ByteBuffer bytes = ByteBuffer.allocate(5 + index + payload.length);
+		//Add length
 		bytes.putInt(1 + index + payload.length);
 		bytes.put(Type.PIECE.typeNum);
 		bytes.putInt(index);
