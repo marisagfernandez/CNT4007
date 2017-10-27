@@ -63,11 +63,10 @@ class Process{
 		} 
 		//hosts arraylist now setup 
 
-		//now need to make connections
+	}
+	public void start() {
 		doConnects();
-		//connections are now made, threads are setup and 
-
-
+		//threads are running
 	}
 	private void doConnects() {
 
@@ -198,12 +197,10 @@ class Process{
 				outgoing.writeInt(data.length);
 				outgoing.write(data);
 			} catch (IOException e) {
-
 				e.printStackTrace();
 			}
 		}
 		private byte[] receive() throws IOException {
-			
 			int length = incoming.readInt();
 			byte[] message = null;
 			if (length > 0) {
@@ -222,6 +219,10 @@ class Process{
 				byte[] recv = receive(); //can block
 				if(recv != null) {
 					//validate handshake
+					boolean valid = Handshake.verifyHandshake(recv, host.id);
+					if(valid) {
+						System.out.println("Handshake is valid!");
+					}
 				}
 
 				System.out.println("Wrote message");
@@ -267,10 +268,11 @@ public class PeerProcess {
 			e.printStackTrace();
 			return;
 		}
-		System.out.println("Config files read");
+		//System.out.println("Config files read");
+		
+		//now that config files are read need to start the process
 
-		//now do connections -- should probably move this inside Process constructor and use try w/ resource
-
+		p.start();
 		//end host loop
 		System.out.println("Finishing");
 
