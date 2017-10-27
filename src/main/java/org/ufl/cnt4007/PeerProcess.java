@@ -59,7 +59,7 @@ class Process{
 		//calculate size of bitset and initialize structure
 		int bit_size = (int) Math.ceil((float)fileSize / pieceSize);
 		this.pieces = new BitSet(bit_size);
-
+		//System.out.println(bit_size);
 		this.id = -1; //read peer list and set up hosts
 		readPeers(id);
 		if(this.id == -1){ //If the id isn't on the list, will still be -1.
@@ -273,7 +273,10 @@ class Process{
 				}
 
 				//now send and accept bitfield
+				System.out.println(pieces);
+				
 				send(ActualMsg.makeBitfield(pieces));
+				
 				byte[] recv = receive();
 				for(byte b : recv) {
 					System.out.print(b + " ");
