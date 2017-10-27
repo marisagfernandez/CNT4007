@@ -8,9 +8,9 @@ public class ActualMsg {
 	public enum Type{
 		CHOKE(0), UNCHOKE(1), INTERESTED(2), NONINTERESTED(3), HAVE(4), BITFIELD(5), REQUEST(6), PIECE(7); 
 		
-		private final int typeNum;
+		private final byte typeNum;
 		Type(int typeNum){
-			this.typeNum = typeNum;
+			this.typeNum = (byte)typeNum;
 		}
 		
 	}
@@ -46,48 +46,48 @@ public class ActualMsg {
 	
 	public byte[] makeChoke() {
 		ByteBuffer bytes = ByteBuffer.allocate(5);
-		bytes.putInt(length);
-		bytes.putInt(Type.CHOKE.typeNum);
+		bytes.putInt(1);
+		bytes.put(Type.CHOKE.typeNum);
 		
 		return bytes.array();
 	}
 	
 	public byte[] makeUnchoke() {
 		ByteBuffer bytes = ByteBuffer.allocate(5);
-		bytes.putInt(length);
-		bytes.putInt(Type.UNCHOKE.typeNum);
+		bytes.putInt(1);
+		bytes.put(Type.UNCHOKE.typeNum);
 		
 		return bytes.array();
 	}
 	public byte[] makeInterested() {
 		ByteBuffer bytes = ByteBuffer.allocate(5);
-		bytes.putInt(length);
-		bytes.putInt(Type.INTERESTED.typeNum);
+		bytes.putInt(1);
+		bytes.put(Type.INTERESTED.typeNum);
 		
 		return bytes.array();
 	}
 	public byte[] makeNotInterested() {
 		ByteBuffer bytes = ByteBuffer.allocate(5);
-		bytes.putInt(length);
-		bytes.putInt(Type.NONINTERESTED.typeNum);
+		bytes.putInt(1);
+		bytes.put(Type.NONINTERESTED.typeNum);
 		
 		return bytes.array();
 	}
 	
-	public byte[] makeHave(byte[] payload) {
+	public byte[] makeHave(int payload) {
 		
 		ByteBuffer bytes = ByteBuffer.allocate(4 + length);
-		bytes.putInt(length);
-		bytes.putInt(Type.HAVE.typeNum);
-		bytes.put(payload);
+		bytes.putInt(5);
+		bytes.put(Type.HAVE.typeNum);
+		bytes.putInt(payload);
 		
 		return bytes.array();
 	}
 	public byte[] makeBitfield(BitSet payload) {
 		
-		ByteBuffer bytes = ByteBuffer.allocate(4 + length);
-		bytes.putInt(length);
-		bytes.putInt(Type.BITFIELD.typeNum);
+		ByteBuffer bytes = ByteBuffer.allocate(4 + length);	
+		bytes.putInt(1 + payload.length());
+		bytes.put(Type.BITFIELD.typeNum);
 		byte[] b = payload.toByteArray();
 		bytes.put(b);
 		
@@ -96,8 +96,8 @@ public class ActualMsg {
 	public byte[] makeRequest(int payload) {
 		
 		ByteBuffer bytes = ByteBuffer.allocate(4 + length);
-		bytes.putInt(length);
-		bytes.putInt(Type.REQUEST.typeNum);
+		bytes.putInt(1 + payload);
+		bytes.put(Type.REQUEST.typeNum);
 		bytes.putInt(payload);
 		
 		return bytes.array();
@@ -105,8 +105,8 @@ public class ActualMsg {
 	public byte[] makePiece(int index, byte[] payload) {
 		
 		ByteBuffer bytes = ByteBuffer.allocate(4 + length);
-		bytes.putInt(length);
-		bytes.putInt(Type.PIECE.typeNum);
+		bytes.putInt(1 + index + payload.length);
+		bytes.put(Type.PIECE.typeNum);
 		bytes.putInt(index);
 		bytes.put(payload);
 		
