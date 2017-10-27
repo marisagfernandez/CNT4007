@@ -218,6 +218,7 @@ class Process{
 		Socket socket;
 		boolean initiator;
 		private boolean requesting;
+		private boolean interested;
 		Handler(Host h, Socket s, boolean initiator){
 			this.choked = false;
 			msgQ = new ArrayBlockingQueue<byte[]>(1024); //arbitrarily chosen
@@ -310,7 +311,7 @@ class Process{
 						
 						if(msgType == ActualMsg.Type.BITFIELD) {
 							//respond with interested or not interested
-							boolean interested = this.host.pieces.get(0); //checks if first bit is set on other host
+							this.interested = this.host.pieces.get(0); //checks if first bit is set on other host
 							if(interested) {
 								send(ActualMsg.makeInterested());
 							} else {
@@ -330,7 +331,7 @@ class Process{
 						
 					}
 					//done handling received messages
-					if(!this.choked && !this.requesting) { //send a request for a piece
+					if(!this.choked && !this.requesting && this.interested) { //send a request for a piece
 						this.requesting = true;
 						//decide on index
 						BitSet r = (BitSet) this.host.pieces.clone();
