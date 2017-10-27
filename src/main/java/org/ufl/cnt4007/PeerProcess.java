@@ -209,6 +209,7 @@ class Process{
 		}
 	}
 	class Handler extends Thread{
+		boolean choked;
 		Queue<byte[]> msgQ;
 		Host host;
 		DataInputStream incoming;
@@ -216,6 +217,7 @@ class Process{
 		Socket socket;
 		boolean initiator;
 		Handler(Host h, Socket s, boolean initiator){
+			this.choked = false;
 			msgQ = new ArrayBlockingQueue<byte[]>(1024); //arbitrarily chosen
 			this.host = h;
 			this.socket = s;
@@ -281,11 +283,11 @@ class Process{
 				}
 
 				//now send and accept bitfield
-				System.out.println(pieces);
+				//System.out.println(pieces);
 				
 				send(ActualMsg.makeBitfield(pieces));
 				
-				byte[] recv = receive();
+				byte[] recv = receive(); //receiving bitfield message
 				for(byte b : recv) {
 					System.out.print(b + " ");
 				}
@@ -294,11 +296,33 @@ class Process{
 				//now enter official while loop
 				int i = 0;
 				while(true) {
-				
 					//check for messages to send from main process
 					while(!msgQ.isEmpty()) {
 						send(msgQ.poll());
 					}
+					//check for incoming messages
+					if(incoming.available() > 0) {
+						recv = receive();
+						ActualMsg m = new ActualMsg(recv);
+						ActualMsg.Type msgType = m.getMsgType();
+						
+						if(msgType == ActualMsg.Type.BITFIELD) {
+							//respond with interested or not interested
+							boolean interested = this.host.pieces.get(0); //checks if first bit is set on other host
+							if(interested) {
+								send(ActualMsg.makeInterested());
+							}
+						}
+						if(msgType == ActualMsg.Type.INTERESTED) {
+							System.out.println(host.hostname + " is interested.");
+						}
+						
+						
+						
+						
+						
+					}
+					
 					//otherwise check for choke/unchoke -- not implemented yet
 					
 					//otherwise check for incoming message

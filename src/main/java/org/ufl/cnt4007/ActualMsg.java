@@ -26,6 +26,9 @@ public class ActualMsg {
 		bytes.get(this.payload,bytes.position(),bytes.remaining()); //loads remaining bytes into this.payload
 		
 	}
+	public Type getMsgType() {
+		return this.msgType;
+	}
 	public byte[] getPayload() {
 		return this.payload;
 	}
