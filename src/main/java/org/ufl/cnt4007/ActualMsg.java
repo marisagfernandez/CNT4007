@@ -1,6 +1,7 @@
 package org.ufl.cnt4007;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.BitSet;
 
 public class ActualMsg {
@@ -17,14 +18,14 @@ public class ActualMsg {
 	private final Type[] typeValues = Type.values();
 	private int length;
 	private Type msgType;
-	public byte[] payload;
+	private byte[] payload;
 	
 	
 	public ActualMsg(byte[] payload) {
-		ByteBuffer bytes = ByteBuffer.wrap(payload);
-		this.msgType = typeValues[bytes.get()];
-		bytes.get(this.payload); //loads remaining bytes into this.payload
-		
+		//ByteBuffer bytes = ByteBuffer.wrap(payload);
+		this.msgType = typeValues[payload[0]];
+		this.payload = Arrays.copyOfRange(payload, 1, payload.length - 1);
+
 	}
 	public Type getMsgType() {
 		return this.msgType;
