@@ -331,6 +331,7 @@ class Process{
 						if(msgType == ActualMsg.Type.REQUEST) {
 							//TODO Actually get the piece
 							byte[] payload = m.getPayload();
+							System.out.println("request payload size: " + payload.length);
 							if(payload.length != 4) {
 								System.out.println("Improper request payload received from + " + this.host.hostname);
 								continue;
