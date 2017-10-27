@@ -260,7 +260,7 @@ class Process{
 
 				send(Handshake.makeHandshake(id));
 				System.out.println("Wrote msg");
-				boolean valid;
+				boolean valid = false;
 				try {
 					valid = receiveHandshake();
 				} catch (Exception e) {
