@@ -215,12 +215,6 @@ class Process{
 		public void run() {
 			System.out.println("Handler started for: " + host.hostname);
 			try {
-				this.incoming = new DataInputStream(socket.getInputStream());
-				this.outgoing = new DataOutputStream(socket.getOutputStream()); 
-				outgoing.flush();
-
-				//System.out.println("initiator is: " + this.initiator);
-
 				System.out.println("initiating connection");
 
 				send(Handshake.makeHandshake(id));
