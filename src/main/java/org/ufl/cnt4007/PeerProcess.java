@@ -302,7 +302,7 @@ class Process{
 					}
 					//check for incoming messages
 					if(incoming.available() > 0) {
-						recv = receive();
+						byte[] recv = receive();
 						ActualMsg m = new ActualMsg(recv);
 						ActualMsg.Type msgType = m.getMsgType();
 						
