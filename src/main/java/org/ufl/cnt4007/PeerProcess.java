@@ -52,6 +52,7 @@ class Process{
 
 	public Process(int id) throws Exception {
 		hosts = new ArrayList<Host>();
+		handlers = new ArrayList<Handler>();
 
 		readCommon(); //reads common.cfg file to init variables.
 
