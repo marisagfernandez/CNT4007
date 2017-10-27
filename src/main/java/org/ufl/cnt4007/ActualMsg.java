@@ -103,7 +103,7 @@ public class ActualMsg {
 		
 		ByteBuffer bytes = ByteBuffer.allocate(5 + (payload.size() / 8));	
 		//Add length
-		bytes.putInt(1 + payload.length());
+		bytes.putInt(1 + payload.size() / 8);
 		bytes.put(Type.BITFIELD.typeNum);
 		byte[] b = payload.toByteArray();
 		bytes.put(b);
