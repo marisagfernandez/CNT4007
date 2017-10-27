@@ -300,6 +300,7 @@ class Process{
 				//now enter official while loop
 				int loop_counter = 0;
 				while(true) {
+					System.out.println("Loop start");
 					//check for messages to send from main process
 					while(!msgQ.isEmpty()) {
 						send(msgQ.poll());
