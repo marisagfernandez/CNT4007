@@ -257,8 +257,11 @@ class Process{
 
 				System.out.println("Wrote message");
 				//now send and accept bitfield
-				
-				
+				send(ActualMsg.makeBitfield(pieces));
+				recv = receive();
+				for(byte b : recv) {
+					System.out.print(b + " ");
+				}
 				
 				//now enter official while loop
 				while(true) {
