@@ -357,8 +357,8 @@ class Process{
 					//otherwise check for incoming message
 					
 					if(++loop_counter > 10) {
-						System.out.println("temporary action loop done");
-						break;
+						//System.out.println("temporary action loop done");
+						//break;
 					}
 				}
 
