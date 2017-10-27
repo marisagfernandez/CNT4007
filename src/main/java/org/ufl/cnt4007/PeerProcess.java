@@ -344,6 +344,7 @@ class Process{
 						}
 						//select randomly
 						Random rando = new Random();
+						System.out.print((indices.size()));
 						int n = rando.nextInt(indices.size());
 						byte [] msg = ActualMsg.makeRequest(n);
 						send(msg);
