@@ -311,10 +311,15 @@ class Process{
 							boolean interested = this.host.pieces.get(0); //checks if first bit is set on other host
 							if(interested) {
 								send(ActualMsg.makeInterested());
+							} else {
+								send(ActualMsg.makeNotInterested());
 							}
 						}
 						if(msgType == ActualMsg.Type.INTERESTED) {
 							System.out.println(host.hostname + " is interested.");
+						}
+						if(msgType == ActualMsg.Type.NONINTERESTED) {
+							System.out.println(host.hostname + " is not interested.");
 						}
 						
 						
