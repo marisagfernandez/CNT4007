@@ -23,8 +23,10 @@ public class ActualMsg {
 	
 	public ActualMsg(byte[] payload) {
 		//ByteBuffer bytes = ByteBuffer.wrap(payload);
-		for (byte b : payload) {
-			System.out.print(b + " ");
+		if(payload.length > 1) {
+			for (byte b : payload) {
+				System.out.print(b + " ");
+			}
 		}
 		System.out.println();
 		this.msgType = typeValues[payload[0]];
