@@ -55,6 +55,8 @@ class Process{
 		handlers = new ArrayList<Handler>();
 
 		readCommon(); //reads common.cfg file to init variables.
+		System.out.println(fileSize);
+		System.out.println(pieceSize);
 
 		//calculate size of bitset and initialize structure
 		int bit_size = (int) Math.ceil((float)fileSize / pieceSize);
