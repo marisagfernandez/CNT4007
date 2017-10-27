@@ -298,7 +298,7 @@ class Process{
 				System.out.println("Done printing out byte field");
 				*/
 				//now enter official while loop
-				int loop_counter = 0;
+				//int loop_counter = 0;
 				while(true) {
 					System.out.println("Loop start");
 					//check for messages to send from main process
@@ -307,6 +307,7 @@ class Process{
 					}
 					//check for incoming messages
 					if(incoming.available() > 0) {
+						System.out.println("Something is available");
 						byte[] recv = receive();
 						if (recv == null) { //TODO: pull msg receiving into another function
 							continue;
