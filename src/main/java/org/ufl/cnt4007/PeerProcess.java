@@ -55,12 +55,14 @@ class Process{
 		handlers = new ArrayList<Handler>();
 
 		readCommon(); //reads common.cfg file to init variables.
-		System.out.println(fileSize);
-		System.out.println(pieceSize);
+		//System.out.println(fileSize);
+		//System.out.println(pieceSize);
 
 		//calculate size of bitset and initialize structure
 		int bit_size = (int) Math.ceil((float)fileSize / pieceSize);
+		//System.out.println(bit_size);
 		this.pieces = new BitSet(bit_size);
+		//System.out.println(this.pieces);
 		//System.out.println(bit_size);
 		this.id = -1; //read peer list and set up hosts
 		readPeers(id);
@@ -181,8 +183,12 @@ class Process{
 			//calculate size of bitset and initialize structure
 			int bit_size = (int) Math.ceil((float)fileSize / pieceSize);
 			h.pieces = new BitSet(bit_size);
+			for(int i = 0; i < bit_size; ++i) {
+				h.pieces.set(i,h.hasFile);
+			}
 			if(h.hasFile){
-				h.pieces.flip(0, h.pieces.length());
+				System.out.println(h.hostname + " has the file");
+				
 			}
 			if(id == h.id){
 				//reading current host entry
