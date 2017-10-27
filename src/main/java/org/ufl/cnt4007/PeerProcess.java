@@ -12,6 +12,7 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.ufl.cnt4007.Handshake;
@@ -216,6 +217,7 @@ class Process{
 		DataOutputStream outgoing;
 		Socket socket;
 		boolean initiator;
+		private boolean requesting;
 		Handler(Host h, Socket s, boolean initiator){
 			this.choked = false;
 			msgQ = new ArrayBlockingQueue<byte[]>(1024); //arbitrarily chosen
@@ -294,7 +296,7 @@ class Process{
 				System.out.println("Done printing out byte field");
 				*/
 				//now enter official while loop
-				int i = 0;
+				int loop_counter = 0;
 				while(true) {
 					//check for messages to send from main process
 					while(!msgQ.isEmpty()) {
@@ -327,12 +329,32 @@ class Process{
 						
 						
 					}
+					//done handling received messages
+					if(!this.choked && !this.requesting) { //send a request for a piece
+						this.requesting = true;
+						//decide on index
+						BitSet r = (BitSet) this.host.pieces.clone();
+						r.andNot(Process.this.pieces); //r is now a set of pieces they have and we don't
+						ArrayList<Integer> indices = new ArrayList<Integer>();
+						for(int i = r.nextSetBit(0); i>=0; i = r.nextSetBit(i+1)) {
+							indices.add(i);
+							if(i == Integer.MAX_VALUE) {
+								break;
+							}
+						}
+						//select randomly
+						Random rando = new Random();
+						int n = rando.nextInt(indices.size());
+						byte [] msg = ActualMsg.makeRequest(n);
+						send(msg);
+						System.out.println("sent request for piece: " + n);
+					}
 					
 					//otherwise check for choke/unchoke -- not implemented yet
 					
 					//otherwise check for incoming message
 					
-					if(++i > 1000) {
+					if(++loop_counter > 10) {
 						System.out.println("temporary action loop done");
 						break;
 					}
