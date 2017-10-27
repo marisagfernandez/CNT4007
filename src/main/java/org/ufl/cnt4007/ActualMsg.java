@@ -139,7 +139,7 @@ public class ActualMsg {
 		
 		ByteBuffer bytes = ByteBuffer.allocate(5 + index + payload.length);
 		//Add length
-		bytes.putInt(1 + index + payload.length);
+		bytes.putInt(1 + 4 + payload.length);
 		bytes.put(Type.PIECE.typeNum);
 		bytes.putInt(index);
 		bytes.put(payload);
