@@ -14,10 +14,21 @@ public class ActualMsg {
 		}
 		
 	}
-	
+	private final Type[] typeValues = Type.values();
 	private int length;
-	//private byte[] type;
-	//private byte[] payload;
+	private Type msgType;
+	private byte[] payload;
+	
+	
+	public ActualMsg(byte[] payload) {
+		ByteBuffer bytes = ByteBuffer.wrap(payload);
+		this.msgType = typeValues[bytes.get()];
+		bytes.get(this.payload,bytes.position(),bytes.remaining()); //loads remaining bytes into this.payload
+		
+	}
+	public byte[] getPayload() {
+		return this.payload;
+	}
 
 	
 	public ActualMsg(int length, int type){

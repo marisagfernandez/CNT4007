@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
@@ -222,10 +223,23 @@ class Process{
 		void addMessage(byte [] msg) {
 			msgQ.add(msg);
 		}
+		/*private void sendHandshake() { //edit: No need to treat special sending, just receiving
+			try {
+				outgoing.write(Handshake.makeHandshake(Process.this.id));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}*/
+		private boolean receiveHandshake() throws IOException {
+			byte[] expected = Handshake.makeHandshake(this.host.id); //expecting host's id
+			byte[] message = new byte[expected.length];
+			incoming.readFully(message, 0, message.length);
+			return Arrays.equals(expected, message);
+		}
 		private void send(byte[] data) {
 			try {
-				outgoing.writeInt(data.length);
-				outgoing.write(data);
+				//outgoing.writeInt(data.length);
+				outgoing.write(data); //all messages are auto prefixed with length (no need to add here)
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -245,20 +259,21 @@ class Process{
 				System.out.println("initiating connection");
 
 				send(Handshake.makeHandshake(id));
-				
-				byte[] recv = receive(); //can block
-				if(recv != null) {
-					//validate handshake
-					boolean valid = Handshake.verifyHandshake(recv, host.id);
-					if(valid) {
-						System.out.println("Handshake is valid!");
-					}
+				System.out.println("Wrote msg");
+				boolean valid;
+				try {
+					valid = receiveHandshake();
+				} catch (Exception e) {
+					System.out.println("Handshake with host " + this.host.hostname + " failed!");
+				}
+				if(!valid) { 
+					System.out.println("Invalid handshake with host: " + this.host.hostname);
+					return; //terminate thread
 				}
 
-				System.out.println("Wrote message");
 				//now send and accept bitfield
 				send(ActualMsg.makeBitfield(pieces));
-				recv = receive();
+				byte[] recv = receive();
 				for(byte b : recv) {
 					System.out.print(b + " ");
 				}
@@ -270,7 +285,7 @@ class Process{
 					while(!msgQ.isEmpty()) {
 						send(msgQ.poll());
 					}
-					//otherwise check for choke/unchoke
+					//otherwise check for choke/unchoke -- not implemented yet
 					
 					//otherwise check for incoming message
 					
