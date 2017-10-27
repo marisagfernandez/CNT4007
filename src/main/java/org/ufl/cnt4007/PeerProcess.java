@@ -3,6 +3,7 @@ package org.ufl.cnt4007;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -327,6 +328,25 @@ class Process{
 						if(msgType == ActualMsg.Type.NONINTERESTED) {
 							System.out.println(host.hostname + " is not interested.");
 						}
+						if(msgType == ActualMsg.Type.REQUEST) {
+							//TODO Actually get the piece
+							byte[] payload = m.getPayload();
+							if(payload.length != 4) {
+								System.out.println("Improper request payload received from + " + this.host.hostname);
+								continue;
+							}
+							int index = ByteBuffer.wrap(payload).getInt();
+							System.out.println("Received request for piece " + index);
+							
+							send(ActualMsg.makePiece(index,"payloadsfordays".getBytes()));
+						}
+						if(msgType == ActualMsg.Type.PIECE) {
+							this.requesting = false;
+							
+						}
+						if(msgType == ActualMsg.Type.HAVE) {
+							
+						}
 						
 						
 						
@@ -348,7 +368,7 @@ class Process{
 						}
 						//select randomly
 						Random rando = new Random();
-						System.out.print((indices.size()));
+						//System.out.print((indices.size()));
 						int n = rando.nextInt(indices.size());
 						byte [] msg = ActualMsg.makeRequest(n);
 						send(msg);
@@ -356,23 +376,8 @@ class Process{
 					}
 					
 					//otherwise check for choke/unchoke -- not implemented yet
-					
-					//otherwise check for incoming message
-					
-					if(++loop_counter > 10) {
-						//System.out.println("temporary action loop done");
-						//break;
-					}
 				}
 
-
-				//System.out.println("incoming message: " + (String)incoming.readObject());
-
-				//    			
-				//    			outgoing.writeObject("Hello");
-				//    			outgoing.flush();
-				//    			String msg = (String)incoming.readObject();
-				//    			System.out.println(msg);
 			} catch(IOException e){
 
 				e.printStackTrace();
