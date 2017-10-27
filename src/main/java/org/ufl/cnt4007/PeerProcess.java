@@ -289,6 +289,7 @@ class Process{
 				for(byte b : recv) {
 					System.out.print(b + " ");
 				}
+				System.out.println("Done printing out byte field");
 				
 				//now enter official while loop
 				while(true) {
