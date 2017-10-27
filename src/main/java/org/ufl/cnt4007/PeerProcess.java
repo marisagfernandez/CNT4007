@@ -286,13 +286,13 @@ class Process{
 				//System.out.println(pieces);
 				
 				send(ActualMsg.makeBitfield(pieces));
-				
+				/*
 				byte[] recv = receive(); //receiving bitfield message
 				for(byte b : recv) {
 					System.out.print(b + " ");
 				}
 				System.out.println("Done printing out byte field");
-				
+				*/
 				//now enter official while loop
 				int i = 0;
 				while(true) {
