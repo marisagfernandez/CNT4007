@@ -31,7 +31,7 @@ public class ActualMsg {
 		System.out.println();
 		this.msgType = typeValues[payload[0]];
 		if(payload.length > 1) {
-			this.payload = Arrays.copyOfRange(payload, 1, payload.length - 1);
+			this.payload = Arrays.copyOfRange(payload, 1, payload.length);
 		} else {
 			this.payload = null;
 		}
