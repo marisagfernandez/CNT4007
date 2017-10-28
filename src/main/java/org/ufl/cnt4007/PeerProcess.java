@@ -309,6 +309,7 @@ class Process{
 					if(incoming.available() > 0) {
 						System.out.println("Something is available");
 						byte[] recv = receive();
+						System.out.println("received!");
 						if (recv == null) { //TODO: pull msg receiving into another function
 							continue;
 						}
