@@ -342,7 +342,7 @@ class Process{
 						if(msgType == ActualMsg.Type.REQUEST) {
 							//TODO Actually get the piece
 							byte[] payload = m.getPayload();
-							System.out.println("request payload size: " + payload.length);
+							//System.out.println("request payload size: " + payload.length);
 							if(payload.length != 4) {
 								System.out.println("Improper request payload received from + " + this.host.hostname);
 								continue;
@@ -354,13 +354,32 @@ class Process{
 						}
 						if(msgType == ActualMsg.Type.PIECE) {
 							this.requesting = false;
+							//piece should have an index and a payload
+							byte[] payload = m.getPayload();
+							if(payload.length < 5) {
+								System.out.println("Strange PIECE message received");
+								continue;
+							}
+							ByteBuffer wrapped = ByteBuffer.wrap(payload);
+							int index = wrapped.getInt();
+							byte[] piece = new byte[wrapped.remaining()];
+							wrapped.get(piece);
+							
+							System.out.println("DEBUG: received piece " + index);
+							System.out.println("DEBUG: Piece contents " + new String(piece));
+							
+							
 							
 						}
 						if(msgType == ActualMsg.Type.HAVE) {
+<<<<<<< HEAD
 							byte[] payload = m.getPayload();
 							int index = ByteBuffer.wrap(payload).getInt();
 							BitSet b = this.host.pieces;
 							b.set(index);
+=======
+
+>>>>>>> f61381bf18de21e2a2fa3a51e4f32c808e46f539
 						}
 						
 						
