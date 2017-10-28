@@ -308,16 +308,16 @@ class Process{
 				//now enter official while loop
 				//int loop_counter = 0;
 				while(true) {
-					System.out.println("Loop start");
+					//System.out.println("Loop start");
 					//check for messages to send from main process
 					while(!msgQ.isEmpty()) {
 						send(msgQ.poll());
 					}
 					//check for incoming messages
 					if(incoming.available() > 0) {
-						System.out.println("Something is available");
+						//System.out.println("Something is available");
 						byte[] recv = receive();
-						System.out.println("received!");
+						//System.out.println("received!");
 						if (recv == null) { //TODO: pull msg receiving into another function
 							continue;
 						}
