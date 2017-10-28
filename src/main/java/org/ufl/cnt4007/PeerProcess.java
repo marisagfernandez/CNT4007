@@ -87,6 +87,8 @@ class Process{
 	}
 	private synchronized void hasPiece(int f) {
 		//create the message to be sent and then run notify peers
+		//also need to update my bitset
+		Process.this.pieces.set(f);
 		byte[] have = ActualMsg.makeHave(f);
 		notifyPeers(have);
 	}
@@ -222,7 +224,7 @@ class Process{
 		private boolean interested;
 		Handler(Host h, Socket s, boolean initiator){
 			this.choked = false;
-			msgQ = new ArrayBlockingQueue<byte[]>(1024); //arbitrarily chosen
+			msgQ = new ArrayBlockingQueue<byte[]>(1024); //arbitrarily chosen data structure
 			this.host = h;
 			this.socket = s;
 			this.initiator = initiator; //initiator is supposed to send first handshake? or can this be done async?	
@@ -368,8 +370,7 @@ class Process{
 							System.out.println("DEBUG: received piece " + index);
 							System.out.println("DEBUG: Piece contents " + new String(piece));
 							
-							
-							
+							Process.this.hasPiece(index);
 						}
 						if(msgType == ActualMsg.Type.HAVE) {
 
