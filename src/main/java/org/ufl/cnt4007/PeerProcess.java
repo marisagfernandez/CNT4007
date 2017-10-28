@@ -260,6 +260,7 @@ class Process{
 			}
 		}
 		private byte[] receive() throws IOException {
+			System.out.print("receive called with: " + incoming.available() + " bytes available.");
 			if(incoming.available() == 0) {
 				return null;
 			}
