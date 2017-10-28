@@ -372,14 +372,11 @@ class Process{
 							
 						}
 						if(msgType == ActualMsg.Type.HAVE) {
-<<<<<<< HEAD
+
 							byte[] payload = m.getPayload();
 							int index = ByteBuffer.wrap(payload).getInt();
 							BitSet b = this.host.pieces;
 							b.set(index);
-=======
-
->>>>>>> f61381bf18de21e2a2fa3a51e4f32c808e46f539
 						}
 						
 						
