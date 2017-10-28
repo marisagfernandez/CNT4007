@@ -378,6 +378,7 @@ class Process{
 							int index = ByteBuffer.wrap(payload).getInt();
 							BitSet b = this.host.pieces;
 							b.set(index);
+							System.out.println("DEBUG: received have for index: " + index);
 						}
 						
 						
