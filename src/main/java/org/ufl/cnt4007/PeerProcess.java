@@ -254,6 +254,10 @@ class Process{
 		private void send(byte[] data) {
 			try {
 				//outgoing.writeInt(data.length);
+				System.out.print("Sending data: ");
+				for(byte b : data) {
+					System.out.print(b + " ");
+				}
 				outgoing.write(data); //all messages are auto prefixed with length (no need to add here)
 			} catch (IOException e) {
 				e.printStackTrace();
