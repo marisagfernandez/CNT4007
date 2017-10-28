@@ -85,10 +85,10 @@ class Process{
 		
 		
 	}
-	private synchronized void hasField(int f) {
+	private synchronized void hasPiece(int f) {
 		//create the message to be sent and then run notify peers
-		byte[] msg = {1,1,2,3,5};
-		notifyPeers(msg);
+		byte[] have = ActualMsg.makeHave(f);
+		notifyPeers(have);
 	}
 	private void notifyPeers(byte[] msg) {
 		for (Handler h : handlers) {
@@ -357,7 +357,8 @@ class Process{
 							
 						}
 						if(msgType == ActualMsg.Type.HAVE) {
-							
+						BitSet b = this.host.pieces;
+						
 						}
 						
 						
