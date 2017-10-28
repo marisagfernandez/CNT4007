@@ -357,8 +357,10 @@ class Process{
 							
 						}
 						if(msgType == ActualMsg.Type.HAVE) {
-						BitSet b = this.host.pieces;
-						
+							byte[] payload = m.getPayload();
+							int index = ByteBuffer.wrap(payload).getInt();
+							BitSet b = this.host.pieces;
+							b.set(index);
 						}
 						
 						
