@@ -127,7 +127,7 @@ public class ActualMsg {
 	}
 	public static byte[] makeRequest(int payload) {
 		
-		ByteBuffer bytes = ByteBuffer.allocate(5 + payload);
+		ByteBuffer bytes = ByteBuffer.allocate(9);
 		//Add length
 		bytes.putInt(5); //should be length of message
 		bytes.put(Type.REQUEST.typeNum);
