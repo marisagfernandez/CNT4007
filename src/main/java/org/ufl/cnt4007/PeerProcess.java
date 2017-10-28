@@ -260,6 +260,9 @@ class Process{
 			}
 		}
 		private byte[] receive() throws IOException {
+			if(incoming.available() == 0) {
+				return null;
+			}
 			int length = incoming.readInt();
 			byte[] message = null;
 			if (length > 0) {
