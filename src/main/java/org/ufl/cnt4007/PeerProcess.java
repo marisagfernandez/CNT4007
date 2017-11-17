@@ -10,8 +10,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Timer;
@@ -34,6 +36,7 @@ class Host{
 
 	BitSet pieces;
 	boolean isChoked; //is this peer choking this host
+	boolean isInterested;
 
 	public String toString() {
 		return hostname + " " + port;
@@ -88,19 +91,41 @@ class Process{
 		
 		TimerTask setPreferredNeighbors = new TimerTask(){
 			public void run(){
+				PriorityQueue<Handler> q = new PriorityQueue<Handler>(new Comparator<Handler>(){
+					public int compare(Handler a, Handler b){
+						int x = a.pieces_received;
+						int y = b.pieces_received;
+	
+						return x - y;
+					}
+				});
 				
+				for(Handler h: handlers){
+					if(h.host.isInterested){
+						q.add(h);
+					}
+				}
 				
-				
+				for(int i = 0; i < prefNeighbors; i++){
+					Handler handler = q.poll();
+					if(handler.host.isChoked){
+						handler.host.isChoked = false; 
+					}
+				}
+	
 			}
 		};
 		
 		Timer timer = new Timer();
 		int delay = 0;
-		int period = 0;
+		int period = unchokingInterval;
 		timer.scheduleAtFixedRate(setPreferredNeighbors, delay, period);
 		
 		
+		
+		
 	}
+	
 	private synchronized void hasPiece(int f) {
 		//create the message to be sent and then run notify peers
 		//also need to update my bitset
@@ -237,7 +262,7 @@ class Process{
 		Socket socket;
 		boolean initiator;
 		private boolean requesting;
-		private boolean interested;
+		boolean interested;
 		int pieces_received;
 		Handler(Host h, Socket s, boolean initiator){
 			this.choked = false;
@@ -346,9 +371,11 @@ class Process{
 						}
 						if(msgType == ActualMsg.Type.INTERESTED) {
 							System.out.println(host.hostname + " is interested.");
+							this.host.isInterested = true;
 						}
 						if(msgType == ActualMsg.Type.NONINTERESTED) {
 							System.out.println(host.hostname + " is not interested.");
+							this.host.isInterested = false;
 						}
 						if(msgType == ActualMsg.Type.REQUEST) {
 							//TODO Actually get the piece
