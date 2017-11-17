@@ -31,6 +31,7 @@ class Host{
 	boolean hasFile;
 
 	BitSet pieces;
+	boolean isChoked; //is this peer choking this host
 
 	public String toString() {
 		return hostname + " " + port;
@@ -240,13 +241,6 @@ class Process{
 		void addMessage(byte [] msg) {
 			msgQ.add(msg);
 		}
-		/*private void sendHandshake() { //edit: No need to treat special sending, just receiving
-			try {
-				outgoing.write(Handshake.makeHandshake(Process.this.id));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}*/
 		private boolean receiveHandshake() throws IOException {
 			byte[] expected = Handshake.makeHandshake(this.host.id); //expecting host's id
 			byte[] message = new byte[expected.length];
@@ -307,8 +301,7 @@ class Process{
 				}
 				System.out.println("Done printing out byte field");
 				*/
-				//now enter official while loop
-				//int loop_counter = 0;
+				//now entering message handling loop
 				while(true) {
 					//System.out.println("Loop start");
 					//check for messages to send from main process
@@ -343,16 +336,21 @@ class Process{
 						}
 						if(msgType == ActualMsg.Type.REQUEST) {
 							//TODO Actually get the piece
-							byte[] payload = m.getPayload();
+							byte[] req_payload = m.getPayload();
 							//System.out.println("request payload size: " + payload.length);
-							if(payload.length != 4) {
+							if(req_payload.length != 4) {
 								System.out.println("Improper request payload received from + " + this.host.hostname);
 								continue;
 							}
-							int index = ByteBuffer.wrap(payload).getInt();
+							int index = ByteBuffer.wrap(req_payload).getInt(); //index of request
 							System.out.println("Received request for piece " + index);
 							
-							send(ActualMsg.makePiece(index,"payloadsfordays".getBytes()));
+							if(!this.host.isChoked) { //checks if peer should be sending to this host
+								//TODO: Get payload from filemanager
+								send(ActualMsg.makePiece(index,"payloadsfordays".getBytes()));
+							} else {
+								System.out.println("Received request from choked host");
+							}
 						}
 						if(msgType == ActualMsg.Type.PIECE) {
 							this.requesting = false;
@@ -380,6 +378,14 @@ class Process{
 							b.set(index);
 							System.out.println("DEBUG: received have for index: " + index);
 						}
+						if(msgType == ActualMsg.Type.UNCHOKE) {
+							this.choked = false;
+							System.out.println("Debug: received UNCHOKE");
+						}
+						if(msgType == ActualMsg.Type.CHOKE) {
+							this.choked = true;
+							System.out.println("Debug: received CHOKE");
+						}
 						
 						
 						
@@ -387,6 +393,7 @@ class Process{
 						
 					}
 					//done handling received messages
+					//don't send a request if choked, or if already requesting or if not interested.
 					if(!this.choked && !this.requesting && this.interested) { //send a request for a piece
 						this.requesting = true;
 						//decide on index
