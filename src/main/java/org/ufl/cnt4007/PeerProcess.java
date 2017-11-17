@@ -94,23 +94,39 @@ class Process{
 				PriorityQueue<Handler> q = new PriorityQueue<Handler>(new Comparator<Handler>(){
 					public int compare(Handler a, Handler b){
 						int x = a.pieces_received;
-						int y = b.pieces_received;
-	
+						int y = b.pieces_received;	
 						return x - y;
 					}
 				});
-				
 				for(Handler h: handlers){
 					if(h.host.isInterested){
 						q.add(h);
+					} else {
+						if(!h.host.isChoked) {
+							h.addMessage(ActualMsg.makeChoke());
+						}
+						h.host.isChoked = true; //choke the host if not interested
 					}
 				}
 				
 				for(int i = 0; i < prefNeighbors; i++){
-					Handler handler = q.poll();
-					if(handler.host.isChoked){
-						handler.host.isChoked = false; 
+					if(q.isEmpty()) { //in case we don't have enough neighbors who can be unchoked
+						break;
 					}
+					Handler handler = q.poll();
+					if(handler.host.isChoked){ //if this top host is choked
+						//create unchoking message
+						handler.addMessage(ActualMsg.makeUnchoke()); //send unchoke message
+						handler.host.isChoked = false;  //unchoke the top k download rates
+					}
+				}
+				while(!q.isEmpty()) { //choke the remaining hosts
+					Handler h = q.poll();
+					if(!h.host.isChoked) { //send message if needed
+						h.addMessage(ActualMsg.makeChoke());
+						h.host.isChoked = true;
+					}
+					
 				}
 	
 			}
