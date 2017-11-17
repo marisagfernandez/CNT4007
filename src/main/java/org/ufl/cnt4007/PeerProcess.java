@@ -89,6 +89,8 @@ class Process{
 		//What needs handled...?
 		//When a piece finishes downloading.. need all threads to send have message
 		
+		Host oUnchockedNeighbor = null;
+		
 		TimerTask setPreferredNeighbors = new TimerTask(){
 			public void run(){
 				PriorityQueue<Handler> q = new PriorityQueue<Handler>(new Comparator<Handler>(){
@@ -120,7 +122,21 @@ class Process{
 		int delay = 0;
 		int period = unchokingInterval;
 		timer.scheduleAtFixedRate(setPreferredNeighbors, delay, period);
-		
+
+		TimerTask setOUnchokedNeighbor = new TimerTask(){
+			public void run(){
+				ArrayList<Host> interestedHosts = new ArrayList<Host>();
+				for(Host h: hosts){
+					if(h.isInterested && h.isChoked){
+						interestedHosts.add(h);
+					}
+				}
+				
+				Random r = new Random();
+				int x = r.nextInt(interestedHosts.size());
+				oUnchockedNeighbor = interestedHosts.get(x);
+			}
+		};
 		
 		
 		
