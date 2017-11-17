@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
+import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.ufl.cnt4007.Handshake;
@@ -83,6 +84,12 @@ class Process{
 		//now need to handle passing info to threads/
 		//What needs handled...?
 		//When a piece finishes downloading.. need all threads to send have message
+		
+		TimerTask setPreferredNeighbors = new TimerTask(){
+			public void run(){
+				
+			}
+		};
 		
 		
 	}
