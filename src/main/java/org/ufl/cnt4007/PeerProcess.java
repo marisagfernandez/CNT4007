@@ -95,7 +95,7 @@ class Process{
 		final oUnchockedNeighbor oUnchockedNeighbor = new oUnchockedNeighbor();
 		
 		TimerTask setPreferredNeighbors = new TimerTask(){
-			public void run(){
+			public synchronized void run(){
 				PriorityQueue<Handler> q = new PriorityQueue<Handler>(new Comparator<Handler>(){
 					public int compare(Handler a, Handler b){
 						int x = a.pieces_received;
@@ -138,12 +138,11 @@ class Process{
 		};
 		
 		Timer timer = new Timer();
-		int delay = 0;
-		int period = unchokingInterval;
-		timer.scheduleAtFixedRate(setPreferredNeighbors, delay, period);
+		
+		timer.scheduleAtFixedRate(setPreferredNeighbors, 0, unchokingInterval);
 
 		TimerTask setOUnchokedNeighbor = new TimerTask(){
-			public void run(){
+			public synchronized void run(){
 				ArrayList<Host> interestedHosts = new ArrayList<Host>();
 				for(Host h: hosts){
 					if(h.isInterested && h.isChoked){
@@ -157,8 +156,8 @@ class Process{
 			}
 		};
 		
-		
-		
+		timer.scheduleAtFixedRate(setOUnchokedNeighbor, 0, oUnchokingInterval);
+
 	}
 	
 	private synchronized void hasPiece(int f) {
