@@ -88,8 +88,11 @@ class Process{
 		//now need to handle passing info to threads/
 		//What needs handled...?
 		//When a piece finishes downloading.. need all threads to send have message
+		class oUnchockedNeighbor{
+			Host value = null;
+		}
 		
-		Host oUnchockedNeighbor = null;
+		final oUnchockedNeighbor oUnchockedNeighbor = new oUnchockedNeighbor();
 		
 		TimerTask setPreferredNeighbors = new TimerTask(){
 			public void run(){
@@ -150,7 +153,7 @@ class Process{
 				
 				Random r = new Random();
 				int x = r.nextInt(interestedHosts.size());
-				oUnchockedNeighbor = interestedHosts.get(x);
+				oUnchockedNeighbor.value = interestedHosts.get(x);
 			}
 		};
 		
