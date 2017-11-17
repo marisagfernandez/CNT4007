@@ -127,6 +127,10 @@ class Process{
 				}
 				while(!q.isEmpty()) { //choke the remaining hosts
 					Handler h = q.poll();
+					if(h.host == oUnchockedNeighbor.value) {
+						//don't choke
+						continue;
+					}
 					if(!h.host.isChoked) { //send message if needed
 						h.addMessage(ActualMsg.makeChoke());
 						h.host.isChoked = true;
@@ -144,16 +148,19 @@ class Process{
 
 		TimerTask setOUnchokedNeighbor = new TimerTask(){
 			public void run(){
-				ArrayList<Host> interestedHosts = new ArrayList<Host>();
-				for(Host h: hosts){
-					if(h.isInterested && h.isChoked){
+				ArrayList<Handler> interestedHosts = new ArrayList<Handler>();
+				for(Handler h: handlers){
+					if(h.host.isInterested && h.host.isChoked){
 						interestedHosts.add(h);
 					}
 				}
-				
-				Random r = new Random();
-				int x = r.nextInt(interestedHosts.size());
-				oUnchockedNeighbor.value = interestedHosts.get(x);
+				if(interestedHosts.size() > 0) {
+					Random r = new Random();
+					int x = r.nextInt(interestedHosts.size());
+					oUnchockedNeighbor.value = interestedHosts.get(x).host;
+					oUnchockedNeighbor.value.isChoked = false;
+					interestedHosts.get(x).addMessage(ActualMsg.makeUnchoke());
+				}
 			}
 		};
 		
