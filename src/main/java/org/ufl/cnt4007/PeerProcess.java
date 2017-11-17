@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -88,8 +89,15 @@ class Process{
 		TimerTask setPreferredNeighbors = new TimerTask(){
 			public void run(){
 				
+				
+				
 			}
 		};
+		
+		Timer timer = new Timer();
+		int delay = 0;
+		int period = 0;
+		timer.scheduleAtFixedRate(setPreferredNeighbors, delay, period);
 		
 		
 	}
