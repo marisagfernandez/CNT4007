@@ -223,6 +223,7 @@ class Process{
 		boolean initiator;
 		private boolean requesting;
 		private boolean interested;
+		int pieces_received;
 		Handler(Host h, Socket s, boolean initiator){
 			this.choked = false;
 			msgQ = new ArrayBlockingQueue<byte[]>(1024); //arbitrarily chosen data structure
@@ -364,7 +365,7 @@ class Process{
 							int index = wrapped.getInt();
 							byte[] piece = new byte[wrapped.remaining()];
 							wrapped.get(piece);
-							
+							this.pieces_received++; //keeps track of pieces received during a time period
 							System.out.println("DEBUG: received piece " + index);
 							System.out.println("DEBUG: Piece contents " + new String(piece));
 							
