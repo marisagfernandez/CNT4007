@@ -496,7 +496,7 @@ class Process{
 					if(!this.choked && !this.requesting && this.interested) { //send a request for a piece
 						this.requesting = true;
 						//decide on index
-						BitSet r = (BitSet) Process.this.pieces.clone();// this.host.pieces.clone();
+						BitSet r = (BitSet) this.host.pieces.clone();
 						r.andNot(Process.this.pieces); //r is now a set of pieces they have and we don't
 						ArrayList<Integer> indices = new ArrayList<Integer>();
 						for(int i = r.nextSetBit(0); i>=0; i = r.nextSetBit(i+1)) {
@@ -505,13 +505,18 @@ class Process{
 								break;
 							}
 						}
+						System.out.print("Current bitset is: ");
+						for(int i : indices) {
+							System.out.print(i + " ");
+						}
+						System.out.println();
 						//select randomly
 						Random rando = new Random();
 						//System.out.print((indices.size()));
 						int n = rando.nextInt(indices.size());
-						byte [] msg = ActualMsg.makeRequest(n);
+						byte [] msg = ActualMsg.makeRequest(indices.get(n));
 						send(msg);
-						System.out.println("sent request for piece: " + n);
+						System.out.println("sent request for piece: " + indices.get(n));
 					}
 					
 					//otherwise check for choke/unchoke -- not implemented yet
