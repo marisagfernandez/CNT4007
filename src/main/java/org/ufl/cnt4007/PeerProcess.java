@@ -502,9 +502,9 @@ class Process{
 						Random rando = new Random();
 						//System.out.print((indices.size()));
 						int n = rando.nextInt(indices.size());
-						byte [] msg = ActualMsg.makeRequest(n);
+						byte [] msg = ActualMsg.makeRequest(indices.get(n));
 						send(msg);
-						System.out.println("sent request for piece: " + n);
+						System.out.println("sent request for piece: " + indices.get(n));
 					}
 					
 					//otherwise check for choke/unchoke -- not implemented yet
