@@ -528,19 +528,20 @@ class Process{
 							//they don't have any extra pieces
 							this.interested = false;
 							send(ActualMsg.makeNotInterested());
+						} else {
+							System.out.print("Current bitset is: ");
+							for(int i : indices) {
+								System.out.print(i + " ");
+							}
+							System.out.println();
+							//select randomly
+							Random rando = new Random();
+							//System.out.print((indices.size()));
+							int n = rando.nextInt(indices.size());
+							byte [] msg = ActualMsg.makeRequest(indices.get(n));
+							send(msg);
+							System.out.println("sent request for piece: " + indices.get(n));
 						}
-						System.out.print("Current bitset is: ");
-						for(int i : indices) {
-							System.out.print(i + " ");
-						}
-						System.out.println();
-						//select randomly
-						Random rando = new Random();
-						//System.out.print((indices.size()));
-						int n = rando.nextInt(indices.size());
-						byte [] msg = ActualMsg.makeRequest(indices.get(n));
-						send(msg);
-						System.out.println("sent request for piece: " + indices.get(n));
 					}
 					
 					if(Process.this.self.hasFile && this.host.hasFile) {
