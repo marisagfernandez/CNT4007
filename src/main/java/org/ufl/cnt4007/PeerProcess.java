@@ -168,6 +168,18 @@ class Process{
 		};
 		
 		timer.scheduleAtFixedRate(setOUnchokedNeighbor, 0, oUnchokingInterval);
+		
+		for(Handler h: handlers){
+			try {
+				h.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}	
+		}
+		
+		timer.cancel();
+		
+		
 
 	}
 	
