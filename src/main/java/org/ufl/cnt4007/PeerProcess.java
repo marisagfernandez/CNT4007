@@ -469,6 +469,7 @@ class Process{
 							System.out.println("Debug: received UNCHOKE");
 						}
 						if(msgType == ActualMsg.Type.CHOKE) {
+							this.requesting = false;
 							this.choked = true;
 							System.out.println("Debug: received CHOKE");
 						}
