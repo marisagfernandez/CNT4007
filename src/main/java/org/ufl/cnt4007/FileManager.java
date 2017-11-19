@@ -8,14 +8,25 @@ import java.io.IOException;
 
 public class FileManager {
 
-	//private File file;
-	
+	private File file;
+	private int pieceSize;
+	private int numPieces;
+	private int peerID;
+	private byte[] piece;
 	
 	public FileManager (){
 		
 	}
 	
-	public static void makePieces (File file, int pieceSize, int numPieces) throws IOException{
+	public FileManager(File file, int pieceSize, int numPieces, int peerID, byte[] piece){
+		this.file = file;
+		this.pieceSize = pieceSize;
+		this.numPieces = numPieces;
+		this.peerID = peerID;
+		this.piece = piece;
+	}
+	
+	public static void makePieces (File file, int pieceSize, int numPieces, int peerID) throws IOException{
 
 		try{
 			byte[] b = new byte[pieceSize];
@@ -25,7 +36,7 @@ public class FileManager {
 				//Read in the data from main file
 				f.read(b);
 				//Create new file for the piece
-				File piece = new File(file.getParent(), "piece" + String.valueOf(i+1));
+				File piece = new File("./peer_"+String.valueOf(peerID),"piece" + String.valueOf(i+1));
 				try{
 					FileOutputStream outputStream = new FileOutputStream(piece);
 					//Write the data to the file representing the piece
@@ -46,14 +57,29 @@ public class FileManager {
 		}
 	}
 	
-	public static void writePiecesToFile(File file, int pieceSize, int numPieces) throws IOException{
+	public static void savePiece(byte[] piece, int pieceNum, int peerID) throws IOException{
+		try {
+			File file = new File("./peer_"+String.valueOf(peerID),"piece"+String.valueOf(pieceNum));
+			FileOutputStream outputStream = new FileOutputStream(file);
+			outputStream.write(piece);
+
+		}catch(IOException e){
+			System.out.println("ERROR savePiece");
+			e.printStackTrace();
+			throw new IOException();
+		}
+	}
+	
+	
+	public static void writePiecesToFile(String fileName, int pieceSize, int numPieces, int peerID) throws IOException{
 		try{
+			File file = new File("./peer_"+String.valueOf(peerID), fileName);
 			FileOutputStream f = new FileOutputStream(file);
 			byte[] b = new byte[pieceSize];
 			
 			for(int i = 0; i < numPieces; i++){
 				//Find the file representing the piece
-				FileInputStream inputStream = new FileInputStream("piece"+String.valueOf(i+1));
+				FileInputStream inputStream = new FileInputStream("./peer_"+String.valueOf(peerID)+"/"+"piece"+String.valueOf(i+1));
 				//Read its data
 				inputStream.read(b);
 				//Then write it to the main file
@@ -80,9 +106,10 @@ public class FileManager {
 		
 		int pieceSize = 119;
 		int numPieces = 3;
+		int peerID = 1001;
 		try{
-			makePieces(f, pieceSize, numPieces);
-			writePiecesToFile(f2, pieceSize, numPieces);
+			makePieces(f, pieceSize, numPieces, peerID);
+			//writePiecesToFile(f2, pieceSize, numPieces);
 		}catch(IOException e){
 			System.out.println("Error!");
 			e.printStackTrace();
