@@ -1,16 +1,14 @@
 package org.ufl.cnt4007;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
+
 
 public class FileManager {
 
-	private File file;
+	//private File file;
 	
 	
 	public FileManager (){
@@ -32,12 +30,13 @@ public class FileManager {
 					FileOutputStream outputStream = new FileOutputStream(piece);
 					//Write the data to the file representing the piece
 					outputStream.write(b);
-								
+				
 				}catch (IOException e){
 					System.out.println("ERROR in creating piece");
 					e.printStackTrace();
 					throw new IOException();
-				}
+				}	
+				
 			}
 			
 		}catch (IOException e){
