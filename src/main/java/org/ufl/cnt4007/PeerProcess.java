@@ -52,11 +52,13 @@ class Process{
 	long pieceSize;
 
 	ArrayList<Host> hosts;
+	Host self;
 	private ArrayList<Handler> handlers;
 	int listenPort;
 
 	int id;
 	BitSet pieces;
+	int pieceCount;
 
 	public Process(int id) throws Exception {
 		hosts = new ArrayList<Host>();
@@ -67,9 +69,9 @@ class Process{
 		//System.out.println(pieceSize);
 
 		//calculate size of bitset and initialize structure
-		int bit_size = (int) Math.ceil((float)fileSize / pieceSize);
+		this.pieceCount = (int) Math.ceil((float)fileSize / pieceSize);
 		//System.out.println(bit_size);
-		this.pieces = new BitSet(bit_size);
+		this.pieces = new BitSet(pieceCount);
 		//System.out.println(this.pieces);
 		//System.out.println(bit_size);
 		this.id = -1; //read peer list and set up hosts
@@ -171,10 +173,15 @@ class Process{
 	
 	private synchronized void hasPiece(int f) {
 		//create the message to be sent and then run notify peers
-		//also need to update my bitset
+		//updates bitset
 		Process.this.pieces.set(f);
 		byte[] have = ActualMsg.makeHave(f);
 		notifyPeers(have);
+		
+		//if have all pieces set haveFile to true
+		if(Process.this.pieces.cardinality() == this.pieceCount) {
+			this.self.hasFile = true;
+		}
 	}
 	private void notifyPeers(byte[] msg) {
 		for (Handler h : handlers) {
@@ -283,6 +290,7 @@ class Process{
 				this.id = id;
 				this.pieces = h.pieces;
 				this.listenPort = h.port;
+				this.self = h;
 				hosts.add(h); //need this here for now to separate list into who to connect to.
 			} else {
 				//not current host
@@ -463,6 +471,10 @@ class Process{
 							BitSet b = this.host.pieces;
 							b.set(index);
 							System.out.println("DEBUG: received have for index: " + index);
+							if(b.cardinality() == Process.this.pieceCount) {
+								//connected host now has all the pieces
+								this.host.hasFile = true;
+							}
 						}
 						if(msgType == ActualMsg.Type.UNCHOKE) {
 							this.choked = false;
@@ -473,15 +485,22 @@ class Process{
 							this.choked = true;
 							System.out.println("Debug: received CHOKE");
 						}
-						
-						
-						
+							
 						
 						
 					}
 					//done handling received messages
 					//don't send a request if choked, or if already requesting or if not interested.
-					if(!this.choked && !this.requesting && this.interested) { //send a request for a piece
+					if(!this.interested) {
+						//check if should be interested
+						BitSet r = (BitSet) this.host.pieces.clone();
+						r.andNot(Process.this.pieces);
+						if(!r.isEmpty()) {
+							send(ActualMsg.makeInterested());
+							this.interested = true;
+						}
+
+					} else if(!this.choked && !this.requesting && this.interested) { //send a request for a piece
 						this.requesting = true;
 						//decide on index
 						BitSet r = (BitSet) this.host.pieces.clone();
@@ -492,6 +511,11 @@ class Process{
 							if(i == Integer.MAX_VALUE) {
 								break;
 							}
+						}
+						if(indices.size() == 0) {
+							//they don't have any extra pieces
+							this.interested = false;
+							send(ActualMsg.makeNotInterested());
 						}
 						System.out.print("Current bitset is: ");
 						for(int i : indices) {
@@ -507,7 +531,9 @@ class Process{
 						System.out.println("sent request for piece: " + indices.get(n));
 					}
 					
-					//otherwise check for choke/unchoke -- not implemented yet
+					if(Process.this.self.hasFile && this.host.hasFile) {
+						break;
+					}
 				}
 
 			} catch(IOException e){
