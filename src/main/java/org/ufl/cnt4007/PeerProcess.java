@@ -528,6 +528,7 @@ class Process{
 							//they don't have any extra pieces
 							this.interested = false;
 							send(ActualMsg.makeNotInterested());
+							continue;
 						} else {
 							System.out.print("Current bitset is: ");
 							for(int i : indices) {
@@ -548,6 +549,12 @@ class Process{
 						break;
 					}
 				}
+				/*try {
+					//wait(5);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}*/
 
 			} catch(IOException e){
 
