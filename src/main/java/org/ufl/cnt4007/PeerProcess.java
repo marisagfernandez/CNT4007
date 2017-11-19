@@ -484,7 +484,7 @@ class Process{
 					if(!this.choked && !this.requesting && this.interested) { //send a request for a piece
 						this.requesting = true;
 						//decide on index
-						BitSet r = (BitSet) this.host.pieces.clone();
+						BitSet r = (BitSet) Process.this.pieces.clone();// this.host.pieces.clone();
 						r.andNot(Process.this.pieces); //r is now a set of pieces they have and we don't
 						ArrayList<Integer> indices = new ArrayList<Integer>();
 						for(int i = r.nextSetBit(0); i>=0; i = r.nextSetBit(i+1)) {
