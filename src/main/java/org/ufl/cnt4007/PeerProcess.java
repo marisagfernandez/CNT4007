@@ -416,13 +416,13 @@ class Process{
 				//System.out.println(pieces);
 				
 				send(ActualMsg.makeBitfield(pieces));
-				/*
+				
 				byte[] recv = receive(); //receiving bitfield message
 				for(byte b : recv) {
 					System.out.print(b + " ");
 				}
 				System.out.println("Done printing out byte field");
-				*/
+				
 				//now entering message handling loop
 				while(true) {
 					//System.out.println("Loop start");
@@ -504,8 +504,8 @@ class Process{
 							this.pieces_received++; //keeps track of pieces received during a time period
 							int count = Process.this.pieces.cardinality();
 							Process.this.log.log("Peer " + Process.this.id + " has downloaded the piece " + index + " from " + this.host.id + "\n Now the number of pieces it has is " + (1 + count));
-							System.out.println("DEBUG: received piece " + index);
-							System.out.println("DEBUG: Piece contents " + new String(piece));
+//							System.out.println("DEBUG: received piece " + index);
+//							System.out.println("DEBUG: Piece contents " + new String(piece));
 							
 							Process.this.hasPiece(index);
 						}
@@ -516,7 +516,7 @@ class Process{
 							BitSet b = this.host.pieces;
 							b.set(index);
 							Process.this.log.log("Peer " + Process.this.id + " received the 'have' message from " + this.host.id + " for the piece " + index);
-							System.out.println("DEBUG: received have for index: " + index);
+							//System.out.println("DEBUG: received have for index: " + index);
 							if(b.cardinality() == Process.this.pieceCount) {
 								//connected host now has all the pieces
 								this.host.hasFile = true;
