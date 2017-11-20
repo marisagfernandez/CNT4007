@@ -8,11 +8,11 @@ import java.io.IOException;
 
 public class FileManager {
 
-	private static File file;
-	private static int pieceSize;
-	private static int numPieces;
-	private static int peerID;
-	private static byte[] piece;
+	private File file;
+	private int pieceSize;
+	private int numPieces;
+	private int peerID;
+	private byte[] piece;
 	
 	public FileManager (){
 		
@@ -26,7 +26,7 @@ public class FileManager {
 		this.piece = piece;
 	}
 	
-	public static void makePieces () throws IOException{
+	public void makePieces () throws IOException{
 
 		try{
 			byte[] b = new byte[pieceSize];
@@ -57,7 +57,7 @@ public class FileManager {
 		}
 	}
 	
-	public static void savePiece(int pieceNum) throws IOException{
+	public void savePiece(int pieceNum) throws IOException{
 		try {
 			File file = new File("./peer_"+String.valueOf(peerID),"piece"+String.valueOf(pieceNum));
 			FileOutputStream outputStream = new FileOutputStream(file);
@@ -71,7 +71,7 @@ public class FileManager {
 	}
 	
 	
-	public static void writePiecesToFile(String fileName) throws IOException{
+	public void writePiecesToFile(String fileName) throws IOException{
 		try{
 			File file = new File("./peer_"+String.valueOf(peerID), fileName);
 			FileOutputStream f = new FileOutputStream(file);
