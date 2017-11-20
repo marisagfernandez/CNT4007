@@ -442,6 +442,19 @@ class Process{
 						ActualMsg.Type msgType = m.getMsgType();
 						
 						if(msgType == ActualMsg.Type.BITFIELD) {
+							//first: parse bitfield
+							byte[] ar = m.getPayload();
+							this.host.pieces = BitSet.valueOf(ar);
+							BitSet r = (BitSet) this.host.pieces.clone();
+							r.andNot(Process.this.pieces);
+							if(!r.isEmpty()) {
+								send(ActualMsg.makeInterested());
+								this.interested = true;
+							} else {
+								send(ActualMsg.makeNotInterested());
+								this.interested = false;
+							}
+							
 							//respond with interested or not interested
 							this.interested = this.host.pieces.get(0); //checks if first bit is set on other host
 							if(interested) {
@@ -489,9 +502,8 @@ class Process{
 							byte[] piece = new byte[wrapped.remaining()];
 							wrapped.get(piece);
 							this.pieces_received++; //keeps track of pieces received during a time period
-							int count;
-							count = Process.this.pieces.cardinality();
-							Process.this.log.log("Peer " + Process.this.id + " has downloaded the piece " + index + " from " + this.host.id + "\n Now the number of pieces it has is " + count);
+							int count = Process.this.pieces.cardinality();
+							Process.this.log.log("Peer " + Process.this.id + " has downloaded the piece " + index + " from " + this.host.id + "\n Now the number of pieces it has is " + (1 + count));
 							System.out.println("DEBUG: received piece " + index);
 							System.out.println("DEBUG: Piece contents " + new String(piece));
 							
