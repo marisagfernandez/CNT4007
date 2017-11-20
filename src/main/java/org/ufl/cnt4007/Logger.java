@@ -20,7 +20,7 @@ public class Logger {
 	}
 	void log(String s) {
 		String time = ZonedDateTime.now().format(DateTimeFormatter.RFC_1123_DATE_TIME);
-			s = time + ": " + s;
+			s = time + ": " + s + "\n";
 		try {
 			f.write(s.getBytes());
 		} catch (IOException e) {

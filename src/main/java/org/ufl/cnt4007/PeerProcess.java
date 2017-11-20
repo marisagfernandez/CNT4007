@@ -169,11 +169,14 @@ class Process{
 					}
 				}
 				if(interestedHosts.size() > 0) {
+					//someone to unchoke.
 					Random r = new Random();
 					int x = r.nextInt(interestedHosts.size());
 					oUnchockedNeighbor.value = interestedHosts.get(x).host;
 					oUnchockedNeighbor.value.isChoked = false;
 					interestedHosts.get(x).addMessage(ActualMsg.makeUnchoke());
+					int id = interestedHosts.get(x).host.id;
+					log.log("Peer " + Process.this.id + " has the optimistically unchoked neighbor " + id);
 				}
 			}
 		};
