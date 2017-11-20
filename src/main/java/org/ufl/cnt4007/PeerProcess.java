@@ -455,16 +455,15 @@ class Process{
 								send(ActualMsg.makeNotInterested());
 								this.interested = false;
 							}
-							for(byte b : recv) {
+							/*for(byte b : recv) {
 								System.out.print(b + " ");
-							}
-							System.out.println("\n byte array printed");
+							}*/
+							//System.out.println("\n byte array printed");
+							
 							//respond with interested or not interested
-							this.interested = this.host.pieces.get(0); //checks if first bit is set on other host
-							if(interested) {
-								send(ActualMsg.makeInterested());
-							} else {
-								send(ActualMsg.makeNotInterested());
+							if(this.host.pieces.cardinality() == Process.this.pieceCount) {
+								//connected host now has all the pieces
+								this.host.hasFile = true;
 							}
 						}
 						if(msgType == ActualMsg.Type.INTERESTED) {
