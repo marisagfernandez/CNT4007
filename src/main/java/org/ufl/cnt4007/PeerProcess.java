@@ -417,8 +417,8 @@ class Process{
 				
 				send(ActualMsg.makeBitfield(pieces));
 				
-				byte[] recv = receive(); //receiving bitfield message
-				for(byte b : recv) {
+				byte[] bitfield_ar = receive(); //receiving bitfield message
+				for(byte b : bitfield_ar) {
 					System.out.print(b + " ");
 				}
 				System.out.println("Done printing out byte field");
