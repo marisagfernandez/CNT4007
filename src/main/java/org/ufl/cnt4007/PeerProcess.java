@@ -453,10 +453,16 @@ class Process{
 						if(msgType == ActualMsg.Type.INTERESTED) {
 							System.out.println(host.hostname + " is interested.");
 							this.host.isInterested = true;
+							
+							//LOG:
+							Process.this.log.log("Peer" + Process.this.id + "recieved the interested 'interested' message from " + this.host.id);
 						}
 						if(msgType == ActualMsg.Type.NONINTERESTED) {
 							System.out.println(host.hostname + " is not interested.");
 							this.host.isInterested = false;
+							
+							//LOG:
+							Process.this.log.log("Peer" + Process.this.id + "recieved the interested ' not interested' message from " + this.host.id);
 						}
 						if(msgType == ActualMsg.Type.REQUEST) {
 							//TODO Actually get the piece
