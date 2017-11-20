@@ -59,10 +59,13 @@ class Process{
 	int id;
 	BitSet pieces;
 	int pieceCount;
+	
+	Logger log;
 
 	public Process(int id) throws Exception {
 		hosts = new ArrayList<Host>();
 		handlers = new ArrayList<Handler>();
+		this.log = new Logger(id);
 
 		readCommon(); //reads common.cfg file to init variables.
 		//System.out.println(fileSize);
@@ -115,17 +118,25 @@ class Process{
 						h.host.isChoked = true; //choke the host if not interested
 					}
 				}
-				
+				String id_string = "";
+				boolean changed = false;
 				for(int i = 0; i < prefNeighbors; i++){
 					if(q.isEmpty()) { //in case we don't have enough neighbors who can be unchoked
 						break;
 					}
 					Handler handler = q.poll();
+					//this handler is in pref neighbors
+					id_string += handler.host.id + " ";
 					if(handler.host.isChoked){ //if this top host is choked
+						changed = true;
 						//create unchoking message
 						handler.addMessage(ActualMsg.makeUnchoke()); //send unchoke message
 						handler.host.isChoked = false;  //unchoke the top k download rates
 					}
+				}
+				//LOG: change of preferred neighbors
+				if(changed) {
+					log.log("Peer " + id + " has the preferred neighbors " + id_string);
 				}
 				while(!q.isEmpty()) { //choke the remaining hosts
 					Handler h = q.poll();
@@ -214,6 +225,8 @@ class Process{
 				Handler handler = new Handler(host,socket, true);
 				handler.start();
 				handlers.add(handler);
+				//LOG: outwards tcp connection
+				log.log("Peer " + this.id + " makes a connection to Peer " + host.id);
 				
 			} catch (UnknownHostException e) {
 				System.out.println("Unable to connect to host : " + host.hostname);
@@ -231,6 +244,8 @@ class Process{
 				Handler handler = new Handler(host,tempSocket,true);
 				handler.start();
 				handlers.add(handler);
+				//LOG: inwards tcp connection
+				log.log("Peer " + this.id + " is connected from Peer " + host.id);
 
 			}
 		} catch (IOException e) {
@@ -471,6 +486,9 @@ class Process{
 							byte[] piece = new byte[wrapped.remaining()];
 							wrapped.get(piece);
 							this.pieces_received++; //keeps track of pieces received during a time period
+							int count;
+							count = Process.this.pieces.cardinality();
+							Process.this.log.log("Peer " + Process.this.id + " has downloaded the piece " + index + " from " + this.host.id + "\n Now the number of pieces it has is " + count);
 							System.out.println("DEBUG: received piece " + index);
 							System.out.println("DEBUG: Piece contents " + new String(piece));
 							
@@ -482,6 +500,7 @@ class Process{
 							int index = ByteBuffer.wrap(payload).getInt();
 							BitSet b = this.host.pieces;
 							b.set(index);
+							Process.this.log.log("Peer " + Process.this.id + " received the 'have' message from " + this.host.id + " for the piece " + index);
 							System.out.println("DEBUG: received have for index: " + index);
 							if(b.cardinality() == Process.this.pieceCount) {
 								//connected host now has all the pieces
