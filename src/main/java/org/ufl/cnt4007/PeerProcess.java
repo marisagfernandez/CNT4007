@@ -416,12 +416,13 @@ class Process{
 				//System.out.println(pieces);
 				
 				send(ActualMsg.makeBitfield(pieces));
-				
+				/*
 				byte[] bitfield_ar = receive(); //receiving bitfield message
 				for(byte b : bitfield_ar) {
 					System.out.print(b + " ");
 				}
 				System.out.println("Done printing out byte field");
+				*/
 				
 				//now entering message handling loop
 				while(true) {
@@ -454,7 +455,10 @@ class Process{
 								send(ActualMsg.makeNotInterested());
 								this.interested = false;
 							}
-							
+							for(byte b : recv) {
+								System.out.print(b + " ");
+							}
+							System.out.println("\n byte array printed");
 							//respond with interested or not interested
 							this.interested = this.host.pieces.get(0); //checks if first bit is set on other host
 							if(interested) {
