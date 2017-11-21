@@ -42,6 +42,9 @@ class Host{
 	public String toString() {
 		return hostname + " " + port;
 	}
+	Host(){
+		this.isInterested = false;
+	}
 }
 
 class Process{
@@ -118,8 +121,8 @@ class Process{
 					} else {
 						if(!h.host.isChoked) {
 							h.addMessage(ActualMsg.makeChoke());
+							h.host.isChoked = true; //choke the host if not interested
 						}
-						h.host.isChoked = true; //choke the host if not interested
 					}
 				}
 				String id_string = "";
@@ -316,11 +319,7 @@ class Process{
 			for(int i = 0; i < bit_size; ++i) {
 				h.pieces.set(i,h.hasFile);
 			}
-			if(h.hasFile){
-				System.out.println(h.hostname + " has the file");
-				
-				
-			}
+
 
 			if(id == h.id){
 				//reading current host entry
