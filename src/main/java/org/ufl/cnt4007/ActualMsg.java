@@ -23,12 +23,6 @@ public class ActualMsg {
 	
 	public ActualMsg(byte[] payload) {
 		//ByteBuffer bytes = ByteBuffer.wrap(payload);
-		if(payload.length > 1) {
-			for (byte b : payload) {
-				System.out.print(b + " ");
-			}
-		}
-		System.out.println();
 		this.msgType = typeValues[payload[0]];
 		if(payload.length > 1) {
 			this.payload = Arrays.copyOfRange(payload, 1, payload.length);
