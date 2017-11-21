@@ -36,9 +36,9 @@ public class FileManager {
 				//Read in the data from main file
 				f.read(b);
 				//Create new file for the piece
-				File piece = new File("./peer_"+String.valueOf(peerID),"piece" + String.valueOf(i+1));
+				File piece = new File("./peer_"+String.valueOf(peerID)+"/","piece" + String.valueOf(i+1));
 				try{
-					FileOutputStream outputStream = new FileOutputStream(piece);
+					FileOutputStream outputStream = new FileOutputStream(piece, false);
 					//Write the data to the file representing the piece
 					outputStream.write(b);
 				
