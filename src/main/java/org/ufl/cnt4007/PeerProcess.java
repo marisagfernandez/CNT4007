@@ -165,7 +165,7 @@ class Process{
 		
 		Timer timer = new Timer();
 		
-		timer.scheduleAtFixedRate(setPreferredNeighbors, 0, unchokingInterval);
+		timer.scheduleAtFixedRate(setPreferredNeighbors, 0, unchokingInterval*1000);
 
 		TimerTask setOUnchokedNeighbor = new TimerTask(){
 
@@ -190,7 +190,7 @@ class Process{
 			}
 		};
 		
-		timer.scheduleAtFixedRate(setOUnchokedNeighbor, 0, oUnchokingInterval);
+		timer.scheduleAtFixedRate(setOUnchokedNeighbor, 0, oUnchokingInterval*1000);
 		
 		for(Handler h: handlers){
 			try {
