@@ -12,7 +12,7 @@ public class FileManager {
 	private int pieceSize;
 	private int numPieces;
 	private int peerID;
-	private byte[] piece;
+	//private byte[] piece;
 	
 	public FileManager (){
 		
@@ -57,10 +57,26 @@ public class FileManager {
 		}
 	}
 	
-	public void savePiece(int pieceNum) throws IOException{
+	public byte[] createPieceByteArray(int pieceNum) throws IOException{
+		try{
+		byte[] piece = new byte[pieceSize];
+		
+		FileInputStream inputStream = new FileInputStream("./peer_"+String.valueOf(peerID)+"/piece"+String.valueOf(pieceNum));
+		inputStream.read(piece);
+		
+		return piece;
+		
+		}catch(IOException e){
+			System.out.println("ERROR in creating piece");
+			e.printStackTrace();
+			throw new IOException();
+		}
+	}
+	
+	public void savePiece(byte[] piece, int pieceNum) throws IOException{
 		try {
-			File file = new File("./peer_"+String.valueOf(peerID),"piece"+String.valueOf(pieceNum));
-			FileOutputStream outputStream = new FileOutputStream(file);
+			//File file = new File("./peer_"+String.valueOf(peerID),"piece"+String.valueOf(pieceNum));
+			FileOutputStream outputStream = new FileOutputStream("./peer_"+String.valueOf(peerID)+"/piece"+String.valueOf(pieceNum), false);
 			outputStream.write(piece);
 
 		}catch(IOException e){

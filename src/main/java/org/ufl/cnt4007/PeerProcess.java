@@ -320,13 +320,18 @@ class Process{
 				h.pieces.set(i,h.hasFile);
 			}
 
-
 			if(id == h.id){
 				//reading current host entry
 				this.id = id;
 				this.pieces = h.pieces;
 				this.listenPort = h.port;
 				this.self = h;
+				
+				//Create the pieces in its subdirectory
+				if(h.hasFile){
+					this.fileManager.makePieces();
+				}
+				
 				hosts.add(h); //need this here for now to separate list into who to connect to.
 			} else {
 				//not current host
@@ -471,10 +476,12 @@ class Process{
 							}
 							int index = ByteBuffer.wrap(req_payload).getInt(); //index of request
 
+							//Create piece requested
+							byte[] piece = Process.this.fileManager.createPieceByteArray(index);
 							
 							if(!this.host.isChoked) { //checks if peer should be sending to this host
-								//TODO: Get payload from filemanager
-								send(ActualMsg.makePiece(index,"payloadsfordays".getBytes()));
+								
+								send(ActualMsg.makePiece(index,piece));
 							} else {
 								//System.out.println("Received request from choked host");
 							}
@@ -490,6 +497,10 @@ class Process{
 							ByteBuffer wrapped = ByteBuffer.wrap(payload);
 							int index = wrapped.getInt();
 							byte[] piece = new byte[wrapped.remaining()];
+							
+							//Create piece in this peers subdirectory
+							Process.this.fileManager.savePiece(piece, index);
+							
 							wrapped.get(piece);
 							this.pieces_received++; //keeps track of pieces received during a time period
 							int count = Process.this.pieces.cardinality();
