@@ -315,7 +315,7 @@ class Process{
 			h.pieces = new BitSet(bit_size);
 			for(int i = 0; i < bit_size; ++i) {
 				h.pieces.set(i,h.hasFile);
-
+			}
 			if(h.hasFile){
 				System.out.println(h.hostname + " has the file");
 				
@@ -333,15 +333,9 @@ class Process{
 				//not current host
 				hosts.add(h);
 			}
-			/*if(PeerProcess.DEBUG){
-				System.out.println("Host tokenizing");
-				for (String t : tokens){
-					System.out.print(t + " "); //just checking tokenizing works
-				}
-			} */
 		}
 	}
-}
+
 	class Handler extends Thread{
 		boolean choked;
 		Queue<byte[]> msgQ;
