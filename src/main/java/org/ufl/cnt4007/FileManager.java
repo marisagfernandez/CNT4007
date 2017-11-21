@@ -67,7 +67,7 @@ public class FileManager {
 		return piece;
 		
 		}catch(IOException e){
-			System.out.println("ERROR in creating piece");
+			System.out.println("ERROR in creating piece - byte array");
 			e.printStackTrace();
 			throw new IOException();
 		}
