@@ -38,7 +38,7 @@ public class FileManager {
 				//Create new file for the piece
 				//File piece = new File("./peer_"+String.valueOf(peerID)+"/","piece" + String.valueOf(i+1));
 				try{
-					FileOutputStream outputStream = new FileOutputStream("./peer_"+String.valueOf(peerID)+"/"+"piece" + String.valueOf(i+1), false);
+					FileOutputStream outputStream = new FileOutputStream("./peer_"+String.valueOf(peerID)+"/"+"piece" + String.valueOf(i), false);
 					//Write the data to the file representing the piece
 					outputStream.write(b);
 				
@@ -95,7 +95,7 @@ public class FileManager {
 			
 			for(int i = 0; i < numPieces; i++){
 				//Find the file representing the piece
-				FileInputStream inputStream = new FileInputStream("./peer_"+String.valueOf(peerID)+"/"+"piece"+String.valueOf(i+1));
+				FileInputStream inputStream = new FileInputStream("./peer_"+String.valueOf(peerID)+"/"+"piece"+String.valueOf(i));
 				//Read its data
 				inputStream.read(b);
 				//Then write it to the main file
