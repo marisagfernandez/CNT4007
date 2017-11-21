@@ -315,16 +315,13 @@ class Process{
 			h.pieces = new BitSet(bit_size);
 			for(int i = 0; i < bit_size; ++i) {
 				h.pieces.set(i,h.hasFile);
-			}
-<<<<<<< HEAD
+
 			if(h.hasFile){
 				System.out.println(h.hostname + " has the file");
 				
 				
 			}
-=======
 
->>>>>>> 386a54d3ce4994773d751b488c9b4144821b0ae4
 			if(id == h.id){
 				//reading current host entry
 				this.id = id;
