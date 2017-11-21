@@ -2,6 +2,7 @@ package org.ufl.cnt4007;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -49,7 +50,7 @@ class Process{
 	int oUnchokingInterval;
 	String fileName;
 	long fileSize;
-	long pieceSize;
+	int pieceSize;
 
 	ArrayList<Host> hosts;
 	Host self;
@@ -61,11 +62,16 @@ class Process{
 	int pieceCount;
 	
 	Logger log;
+	
+	FileManager fileManager;
 
 	public Process(int id) throws Exception {
 		hosts = new ArrayList<Host>();
 		handlers = new ArrayList<Handler>();
 		this.log = new Logger(id);
+		
+		File file = new File("./peer_"+String.valueOf(id), fileName);
+		this.fileManager = new FileManager(file, pieceSize, pieceCount, id);
 
 		readCommon(); //reads common.cfg file to init variables.
 		//System.out.println(fileSize);
@@ -281,7 +287,7 @@ class Process{
 					fileSize = Long.parseLong(value);
 					break;
 				case "PieceSize":
-					pieceSize = Long.parseLong(value);
+					pieceSize = Integer.parseInt(value);
 					break;          
 				}               
 			}
@@ -313,6 +319,7 @@ class Process{
 			}
 			if(h.hasFile){
 				System.out.println(h.hostname + " has the file");
+				
 				
 			}
 			if(id == h.id){

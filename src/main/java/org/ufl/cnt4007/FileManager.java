@@ -18,12 +18,12 @@ public class FileManager {
 		
 	}
 	
-	public FileManager(File file, int pieceSize, int numPieces, int peerID, byte[] piece){
+	public FileManager(File file, int pieceSize, int numPieces, int peerID){
 		this.file = file;
 		this.pieceSize = pieceSize;
 		this.numPieces = numPieces;
 		this.peerID = peerID;
-		this.piece = piece;
+		//this.piece = piece;
 	}
 	
 	public void makePieces () throws IOException{
