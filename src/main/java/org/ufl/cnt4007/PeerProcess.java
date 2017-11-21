@@ -507,10 +507,11 @@ class Process{
 							int index = wrapped.getInt();
 							byte[] piece = new byte[wrapped.remaining()];
 							
+							wrapped.get(piece);
+							
 							//Create piece in this peers subdirectory
 							Process.this.fileManager.savePiece(piece, index);
 							
-							wrapped.get(piece);
 							this.pieces_received++; //keeps track of pieces received during a time period
 							int count = Process.this.pieces.cardinality();
 							Process.this.log.log("Peer " + Process.this.id + " has downloaded the piece " + index + " from " + this.host.id + "\n Now the number of pieces it has is " + (1 + count));
