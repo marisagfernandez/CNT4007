@@ -121,8 +121,8 @@ class Process{
 					} else {
 						if(!h.host.isChoked) {
 							h.addMessage(ActualMsg.makeChoke());
+							h.host.isChoked = true; //choke the host if not interested
 						}
-						h.host.isChoked = true; //choke the host if not interested
 					}
 				}
 				String id_string = "";
