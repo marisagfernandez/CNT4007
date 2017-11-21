@@ -329,7 +329,7 @@ class Process{
 				
 				//Create the pieces in its subdirectory
 				if(h.hasFile){
-					File file = new File(this.fileName);
+					File file = new File("./peer_"+String.valueOf(this.id)+this.fileName);
 					this.fileManager.makePieces(file);
 				}
 				
