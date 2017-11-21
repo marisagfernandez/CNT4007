@@ -42,6 +42,9 @@ class Host{
 	public String toString() {
 		return hostname + " " + port;
 	}
+	Host(){
+		this.isInterested = false;
+	}
 }
 
 class Process{
