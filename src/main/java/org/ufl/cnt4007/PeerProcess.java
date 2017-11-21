@@ -341,6 +341,7 @@ class Process{
 			} */
 		}
 	}
+}
 	class Handler extends Thread{
 		boolean choked;
 		Queue<byte[]> msgQ;
