@@ -70,8 +70,8 @@ class Process{
 		handlers = new ArrayList<Handler>();
 		this.log = new Logger(id);
 		
-		//File file = new File("./peer_"+String.valueOf(id), fileName);
-		//this.fileManager = new FileManager(file, pieceSize, pieceCount, id);
+		File file = new File("./peer_"+String.valueOf(id), fileName);
+		this.fileManager = new FileManager(file, pieceSize, pieceCount, id);
 
 		readCommon(); //reads common.cfg file to init variables.
 
