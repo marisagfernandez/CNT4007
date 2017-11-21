@@ -74,17 +74,20 @@ class Process{
 		this.log = new Logger(id);
 		
 		readCommon(); //reads common.cfg file to init variables.
-
-		this.fileManager = new FileManager(pieceSize, pieceCount, id);
-		
 		
 		//calculate size of bitset and initialize structure
 		this.pieceCount = (int) Math.ceil((float)fileSize / pieceSize);
+	
 
 		this.pieces = new BitSet(pieceCount);
 
 		this.id = -1; //read peer list and set up hosts
+		
+		this.fileManager = new FileManager(pieceSize, pieceCount, id);
+				
 		readPeers(id);
+
+		
 		if(this.id == -1){ //If the id isn't on the list, will still be -1.
 			throw new Exception("id not in list");
 		} 
