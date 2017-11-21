@@ -73,12 +73,11 @@ class Process{
 		handlers = new ArrayList<Handler>();
 		this.log = new Logger(id);
 		
-		//File file = new File("./peer_"+String.valueOf(id), fileName);
-		this.fileManager = new FileManager(pieceSize, pieceCount, id);
-
 		readCommon(); //reads common.cfg file to init variables.
 
-
+		this.fileManager = new FileManager(pieceSize, pieceCount, id);
+		
+		
 		//calculate size of bitset and initialize structure
 		this.pieceCount = (int) Math.ceil((float)fileSize / pieceSize);
 
