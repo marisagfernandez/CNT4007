@@ -218,7 +218,7 @@ class Process{
 			this.self.hasFile = true;
 			log.log("Peer " + this.id + " has downloaded the complete file.");
 			try{
-			this.fileManager.writePiecesToFile(this.fileName+"2");
+			this.fileManager.writePiecesToFile("2"+this.fileName);
 			}catch(IOException e){
 				System.out.println("ERROR in creating file 2");
 				e.printStackTrace();
