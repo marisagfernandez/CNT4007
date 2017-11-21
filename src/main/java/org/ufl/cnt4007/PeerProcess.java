@@ -203,8 +203,9 @@ class Process{
 		notifyPeers(have);
 		
 		//if have all pieces set haveFile to true
-		if(Process.this.pieces.cardinality() == this.pieceCount) {
+		if(Process.this.pieces.cardinality() == this.pieceCount && !this.self.hasFile) {
 			this.self.hasFile = true;
+			log.log("Peer " + this.id + " has downloaded the complete file.");
 		}
 	}
 	private void notifyPeers(byte[] msg) {
