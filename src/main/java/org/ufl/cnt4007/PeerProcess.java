@@ -74,15 +74,13 @@ class Process{
 		this.fileManager = new FileManager(file, pieceSize, pieceCount, id);
 
 		readCommon(); //reads common.cfg file to init variables.
-		//System.out.println(fileSize);
-		//System.out.println(pieceSize);
+
 
 		//calculate size of bitset and initialize structure
 		this.pieceCount = (int) Math.ceil((float)fileSize / pieceSize);
-		//System.out.println(bit_size);
+
 		this.pieces = new BitSet(pieceCount);
-		//System.out.println(this.pieces);
-		//System.out.println(bit_size);
+
 		this.id = -1; //read peer list and set up hosts
 		readPeers(id);
 		if(this.id == -1){ //If the id isn't on the list, will still be -1.
@@ -211,8 +209,9 @@ class Process{
 		notifyPeers(have);
 		
 		//if have all pieces set haveFile to true
-		if(Process.this.pieces.cardinality() == this.pieceCount) {
+		if(Process.this.pieces.cardinality() == this.pieceCount && !this.self.hasFile) {
 			this.self.hasFile = true;
+			log.log("Peer " + this.id + " has downloaded the complete file.");
 		}
 	}
 	private void notifyPeers(byte[] msg) {
@@ -317,11 +316,15 @@ class Process{
 			for(int i = 0; i < bit_size; ++i) {
 				h.pieces.set(i,h.hasFile);
 			}
+<<<<<<< HEAD
 			if(h.hasFile){
 				System.out.println(h.hostname + " has the file");
 				
 				
 			}
+=======
+
+>>>>>>> 386a54d3ce4994773d751b488c9b4144821b0ae4
 			if(id == h.id){
 				//reading current host entry
 				this.id = id;
@@ -333,12 +336,12 @@ class Process{
 				//not current host
 				hosts.add(h);
 			}
-			if(PeerProcess.DEBUG){
+			/*if(PeerProcess.DEBUG){
 				System.out.println("Host tokenizing");
 				for (String t : tokens){
 					System.out.print(t + " "); //just checking tokenizing works
 				}
-			}
+			} */
 		}
 	}
 	class Handler extends Thread{
@@ -378,18 +381,13 @@ class Process{
 		}
 		private void send(byte[] data) {
 			try {
-				//outgoing.writeInt(data.length);
-				System.out.print("Sending data: ");
-				for(byte b : data) {
-					System.out.print(b + " ");
-				}
 				outgoing.write(data); //all messages are auto prefixed with length (no need to add here)
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		private byte[] receive() throws IOException {
-			System.out.print("receive called with: " + incoming.available() + " bytes available.");
+			//System.out.print("receive called with: " + incoming.available() + " bytes available.");
 			if(incoming.available() == 0) {
 				return null;
 			}
@@ -402,12 +400,11 @@ class Process{
 			return message;
 		} 
 		public void run() {
-			System.out.println("Handler started for: " + host.hostname);
 			try {
-				System.out.println("initiating connection");
 
+				
 				send(Handshake.makeHandshake(id));
-				System.out.println("Wrote msg");
+
 				boolean valid = false;
 				try {
 					valid = receiveHandshake();
@@ -419,17 +416,10 @@ class Process{
 					return; //terminate thread
 				}
 
-				//now send and accept bitfield
-				//System.out.println(pieces);
 				
 				send(ActualMsg.makeBitfield(pieces));
-				/*
-				byte[] recv = receive(); //receiving bitfield message
-				for(byte b : recv) {
-					System.out.print(b + " ");
-				}
-				System.out.println("Done printing out byte field");
-				*/
+
+				
 				//now entering message handling loop
 				while(true) {
 					//System.out.println("Loop start");
@@ -449,30 +439,39 @@ class Process{
 						ActualMsg.Type msgType = m.getMsgType();
 						
 						if(msgType == ActualMsg.Type.BITFIELD) {
-							//respond with interested or not interested
-							this.interested = this.host.pieces.get(0); //checks if first bit is set on other host
-							if(interested) {
+							//first: parse bitfield
+							byte[] ar = m.getPayload();
+							this.host.pieces = BitSet.valueOf(ar);
+							BitSet r = (BitSet) this.host.pieces.clone();
+							r.andNot(Process.this.pieces);
+							if(!r.isEmpty()) {
 								send(ActualMsg.makeInterested());
+								this.interested = true;
 							} else {
 								send(ActualMsg.makeNotInterested());
+								this.interested = false;
+							}
+							
+							//respond with interested or not interested
+							if(this.host.pieces.cardinality() == Process.this.pieceCount) {
+								//connected host now has all the pieces
+								this.host.hasFile = true;
 							}
 						}
 						if(msgType == ActualMsg.Type.INTERESTED) {
-							System.out.println(host.hostname + " is interested.");
 							this.host.isInterested = true;
 							
 							//LOG:
 							Process.this.log.log("Peer " + Process.this.id + " recieved the interested 'interested' message from " + this.host.id);
 						}
 						if(msgType == ActualMsg.Type.NONINTERESTED) {
-							System.out.println(host.hostname + " is not interested.");
+
 							this.host.isInterested = false;
 							
 							//LOG:
 							Process.this.log.log("Peer " + Process.this.id + " recieved the interested ' not interested' message from " + this.host.id);
 						}
 						if(msgType == ActualMsg.Type.REQUEST) {
-							//TODO Actually get the piece
 							byte[] req_payload = m.getPayload();
 							//System.out.println("request payload size: " + payload.length);
 							if(req_payload.length != 4) {
@@ -480,13 +479,13 @@ class Process{
 								continue;
 							}
 							int index = ByteBuffer.wrap(req_payload).getInt(); //index of request
-							System.out.println("Received request for piece " + index);
+
 							
 							if(!this.host.isChoked) { //checks if peer should be sending to this host
 								//TODO: Get payload from filemanager
 								send(ActualMsg.makePiece(index,"payloadsfordays".getBytes()));
 							} else {
-								System.out.println("Received request from choked host");
+								//System.out.println("Received request from choked host");
 							}
 						}
 						if(msgType == ActualMsg.Type.PIECE) {
@@ -502,11 +501,9 @@ class Process{
 							byte[] piece = new byte[wrapped.remaining()];
 							wrapped.get(piece);
 							this.pieces_received++; //keeps track of pieces received during a time period
-							int count;
-							count = Process.this.pieces.cardinality();
-							Process.this.log.log("Peer " + Process.this.id + " has downloaded the piece " + index + " from " + this.host.id + "\n Now the number of pieces it has is " + count);
-							System.out.println("DEBUG: received piece " + index);
-							System.out.println("DEBUG: Piece contents " + new String(piece));
+							int count = Process.this.pieces.cardinality();
+							Process.this.log.log("Peer " + Process.this.id + " has downloaded the piece " + index + " from " + this.host.id + "\n Now the number of pieces it has is " + (1 + count));
+
 							
 							Process.this.hasPiece(index);
 						}
@@ -517,7 +514,7 @@ class Process{
 							BitSet b = this.host.pieces;
 							b.set(index);
 							Process.this.log.log("Peer " + Process.this.id + " received the 'have' message from " + this.host.id + " for the piece " + index);
-							System.out.println("DEBUG: received have for index: " + index);
+
 							if(b.cardinality() == Process.this.pieceCount) {
 								//connected host now has all the pieces
 								this.host.hasFile = true;
@@ -525,11 +522,13 @@ class Process{
 						}
 						if(msgType == ActualMsg.Type.UNCHOKE) {
 							this.choked = false;
+							Process.this.log.log("Peer " + Process.this.id + " is unchoked by " + this.host.id);
 							System.out.println("Debug: received UNCHOKE");
 						}
 						if(msgType == ActualMsg.Type.CHOKE) {
 							this.requesting = false;
 							this.choked = true;
+							Process.this.log.log("Peer " + Process.this.id + " is unchoked by " + this.host.id);
 							System.out.println("Debug: received CHOKE");
 						}
 							
@@ -565,18 +564,19 @@ class Process{
 							send(ActualMsg.makeNotInterested());
 							continue;
 						} else {
-							System.out.print("Current bitset is: ");
+							/*System.out.print("Current bitset is: ");
 							for(int i : indices) {
 								System.out.print(i + " ");
 							}
 							System.out.println();
+							*/
 							//select randomly
 							Random rando = new Random();
 							//System.out.print((indices.size()));
 							int n = rando.nextInt(indices.size());
 							byte [] msg = ActualMsg.makeRequest(indices.get(n));
 							send(msg);
-							System.out.println("sent request for piece: " + indices.get(n));
+							//System.out.println("sent request for piece: " + indices.get(n));
 						}
 					}
 					
