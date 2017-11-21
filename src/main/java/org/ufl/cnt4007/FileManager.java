@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class FileManager {
 
-	private File file;
+	//private File file;
 	private int pieceSize;
 	private int numPieces;
 	private int peerID;
@@ -18,15 +18,15 @@ public class FileManager {
 		
 	}
 	
-	public FileManager(File file, int pieceSize, int numPieces, int peerID){
-		this.file = file;
+	public FileManager(int pieceSize, int numPieces, int peerID){
+		//this.file = file;
 		this.pieceSize = pieceSize;
 		this.numPieces = numPieces;
 		this.peerID = peerID;
 		//this.piece = piece;
 	}
 	
-	public void makePieces () throws IOException{
+	public void makePieces (File file) throws IOException{
 
 		try{
 			byte[] b = new byte[pieceSize];

@@ -73,8 +73,8 @@ class Process{
 		handlers = new ArrayList<Handler>();
 		this.log = new Logger(id);
 		
-		File file = new File("./peer_"+String.valueOf(id), fileName);
-		this.fileManager = new FileManager(file, pieceSize, pieceCount, id);
+		//File file = new File("./peer_"+String.valueOf(id), fileName);
+		this.fileManager = new FileManager(pieceSize, pieceCount, id);
 
 		readCommon(); //reads common.cfg file to init variables.
 
@@ -329,7 +329,8 @@ class Process{
 				
 				//Create the pieces in its subdirectory
 				if(h.hasFile){
-					this.fileManager.makePieces();
+					File file = new File(this.fileName);
+					this.fileManager.makePieces(file);
 				}
 				
 				hosts.add(h); //need this here for now to separate list into who to connect to.
