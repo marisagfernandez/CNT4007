@@ -44,6 +44,7 @@ class Host{
 	}
 	Host(){
 		this.isInterested = false;
+		this.isChoked = true; //EDIT
 	}
 }
 
@@ -63,57 +64,57 @@ class Process{
 	int id;
 	BitSet pieces;
 	int pieceCount;
-	
+
 	Logger log;
-	
+
 	FileManager fileManager;
 
 	public Process(int id) throws Exception {
 		hosts = new ArrayList<Host>();
 		handlers = new ArrayList<Handler>();
 		this.log = new Logger(id);
-		
+
 		readCommon(); //reads common.cfg file to init variables.
-		
+
 		//calculate size of bitset and initialize structure
 		this.pieceCount = (int) Math.ceil((float)fileSize / pieceSize);
-	
+
 
 		this.pieces = new BitSet(pieceCount);
 
 		this.id = -1; //read peer list and set up hosts
-		
+
 		this.fileManager = new FileManager(pieceSize, pieceCount, id);
-				
+
 		readPeers(id);
 
-		
+
 		if(this.id == -1){ //If the id isn't on the list, will still be -1.
 			throw new Exception("id not in list");
-		} 
-		//hosts arraylist now setup 
+		}
+		//hosts arraylist now setup
 
 	}
 	public void start() {
 		doConnects();
-		
+
 		//threads are running
-		
+
 		//now need to handle passing info to threads/
 		//What needs handled...?
 		//When a piece finishes downloading.. need all threads to send have message
 		class oUnchockedNeighbor{
 			Host value = null;
 		}
-		
+
 		final oUnchockedNeighbor oUnchockedNeighbor = new oUnchockedNeighbor();
-		
+
 		TimerTask setPreferredNeighbors = new TimerTask(){
 			public synchronized void run(){
 				PriorityQueue<Handler> q = new PriorityQueue<Handler>(new Comparator<Handler>(){
 					public int compare(Handler a, Handler b){
 						int x = a.pieces_received;
-						int y = b.pieces_received;	
+						int y = b.pieces_received;
 						return x - y;
 					}
 				});
@@ -144,7 +145,7 @@ class Process{
 					}
 				}
 				//LOG: change of preferred neighbors
-				if(changed) {
+				if(/*changed*/true) {
 					log.log("Peer " + id + " has the preferred neighbors " + id_string);
 				}
 				while(!q.isEmpty()) { //choke the remaining hosts
@@ -157,14 +158,14 @@ class Process{
 						h.addMessage(ActualMsg.makeChoke());
 						h.host.isChoked = true;
 					}
-					
+
 				}
-	
+
 			}
 		};
-		
+
 		Timer timer = new Timer();
-		
+
 		timer.scheduleAtFixedRate(setPreferredNeighbors, 0, unchokingInterval*1000);
 
 		TimerTask setOUnchokedNeighbor = new TimerTask(){
@@ -189,30 +190,30 @@ class Process{
 				}
 			}
 		};
-		
+
 		timer.scheduleAtFixedRate(setOUnchokedNeighbor, 0, oUnchokingInterval*1000);
-		
+
 		for(Handler h: handlers){
 			try {
 				h.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}	
+			}
 		}
-		
+
 		timer.cancel();
-		
-		
+
+
 
 	}
-	
+
 	private synchronized void hasPiece(int f) {
 		//create the message to be sent and then run notify peers
 		//updates bitset
 		Process.this.pieces.set(f);
 		byte[] have = ActualMsg.makeHave(f);
 		notifyPeers(have);
-		
+
 		//if have all pieces set haveFile to true
 		if(Process.this.pieces.cardinality() == this.pieceCount && !this.self.hasFile) {
 			this.self.hasFile = true;
@@ -246,7 +247,7 @@ class Process{
 				handlers.add(handler);
 				//LOG: outwards tcp connection
 				log.log("Peer " + this.id + " makes a connection to Peer " + host.id);
-				
+
 			} catch (UnknownHostException e) {
 				System.out.println("Unable to connect to host : " + host.hostname);
 			} catch (IOException e) {
@@ -298,8 +299,8 @@ class Process{
 					break;
 				case "PieceSize":
 					pieceSize = Integer.parseInt(value);
-					break;          
-				}               
+					break;
+				}
 			}
 		} catch (IOException e){
 			System.out.println("ERROR, no config file found");
@@ -307,7 +308,7 @@ class Process{
 		}
 
 	}
-	
+
 	private void readPeers(int id) throws IOException{
 		List<String> peerLines = Files.readAllLines(Paths.get("PeerInfo.cfg"), Charset.forName("US-ASCII"));
 		for(String line : peerLines){
@@ -334,13 +335,13 @@ class Process{
 				this.pieces = h.pieces;
 				this.listenPort = h.port;
 				this.self = h;
-				
+
 				//Create the pieces in its subdirectory
 				if(h.hasFile){
 					File file = new File("./peer_"+String.valueOf(this.id)+"/"+this.fileName);
 					this.fileManager.makePieces(file);
 				}
-				
+
 				hosts.add(h); //need this here for now to separate list into who to connect to.
 			} else {
 				//not current host
@@ -361,19 +362,19 @@ class Process{
 		boolean interested;
 		int pieces_received;
 		Handler(Host h, Socket s, boolean initiator){
-			this.choked = false;
+			this.choked = true; //EDIT
 			msgQ = new ArrayBlockingQueue<byte[]>(1024); //arbitrarily chosen data structure
 			this.host = h;
 			this.socket = s;
-			this.initiator = initiator; //initiator is supposed to send first handshake? or can this be done async?	
+			this.initiator = initiator; //initiator is supposed to send first handshake? or can this be done async?
 			try {
 				this.incoming = new DataInputStream(socket.getInputStream());
 				this.outgoing = new DataOutputStream(socket.getOutputStream());
 				outgoing.flush();
 			} catch (IOException e) {
-				
+
 				e.printStackTrace();
-			} 
+			}
 		}
 		void addMessage(byte [] msg) {
 			msgQ.add(msg);
@@ -403,11 +404,11 @@ class Process{
 				incoming.readFully(message, 0, message.length);
 			}
 			return message;
-		} 
+		}
 		public void run() {
 			try {
 
-				
+
 				send(Handshake.makeHandshake(id));
 
 				boolean valid = false;
@@ -416,15 +417,15 @@ class Process{
 				} catch (Exception e) {
 					System.out.println("Handshake with host " + this.host.hostname + " failed!");
 				}
-				if(!valid) { 
+				if(!valid) {
 					System.out.println("Invalid handshake with host: " + this.host.hostname);
 					return; //terminate thread
 				}
 
-				
+
 				send(ActualMsg.makeBitfield(pieces));
 
-				
+
 				//now entering message handling loop
 				while(true) {
 					//System.out.println("Loop start");
@@ -442,7 +443,7 @@ class Process{
 						}
 						ActualMsg m = new ActualMsg(recv);
 						ActualMsg.Type msgType = m.getMsgType();
-						
+
 						if(msgType == ActualMsg.Type.BITFIELD) {
 							//first: parse bitfield
 							byte[] ar = m.getPayload();
@@ -456,7 +457,7 @@ class Process{
 								send(ActualMsg.makeNotInterested());
 								this.interested = false;
 							}
-							
+
 							//respond with interested or not interested
 							if(this.host.pieces.cardinality() == Process.this.pieceCount) {
 								//connected host now has all the pieces
@@ -465,14 +466,14 @@ class Process{
 						}
 						if(msgType == ActualMsg.Type.INTERESTED) {
 							this.host.isInterested = true;
-							
+
 							//LOG:
 							Process.this.log.log("Peer " + Process.this.id + " recieved the interested 'interested' message from " + this.host.id);
 						}
 						if(msgType == ActualMsg.Type.NONINTERESTED) {
 
 							this.host.isInterested = false;
-							
+
 							//LOG:
 							Process.this.log.log("Peer " + Process.this.id + " recieved the interested ' not interested' message from " + this.host.id);
 						}
@@ -487,9 +488,9 @@ class Process{
 
 							//Create piece requested
 							byte[] piece = Process.this.fileManager.createPieceByteArray(index);
-							
+
 							if(!this.host.isChoked) { //checks if peer should be sending to this host
-								
+
 								send(ActualMsg.makePiece(index,piece));
 							} else {
 								//System.out.println("Received request from choked host");
@@ -506,17 +507,17 @@ class Process{
 							ByteBuffer wrapped = ByteBuffer.wrap(payload);
 							int index = wrapped.getInt();
 							byte[] piece = new byte[wrapped.remaining()];
-							
+
 							wrapped.get(piece);
-							
+
 							//Create piece in this peers subdirectory
 							Process.this.fileManager.savePiece(piece, index);
-							
+
 							this.pieces_received++; //keeps track of pieces received during a time period
 							int count = Process.this.pieces.cardinality();
 							Process.this.log.log("Peer " + Process.this.id + " has downloaded the piece " + index + " from " + this.host.id + "\n Now the number of pieces it has is " + (1 + count));
 
-							
+
 							Process.this.hasPiece(index);
 						}
 						if(msgType == ActualMsg.Type.HAVE) {
@@ -540,12 +541,12 @@ class Process{
 						if(msgType == ActualMsg.Type.CHOKE) {
 							this.requesting = false;
 							this.choked = true;
-							Process.this.log.log("Peer " + Process.this.id + " is unchoked by " + this.host.id);
+							Process.this.log.log("Peer " + Process.this.id + " is choked by " + this.host.id);
 							System.out.println("Debug: received CHOKE");
 						}
-							
-						
-						
+
+
+
 					}
 					//done handling received messages
 					//don't send a request if choked, or if already requesting or if not interested.
@@ -554,7 +555,7 @@ class Process{
 						BitSet r = (BitSet) this.host.pieces.clone();
 						r.andNot(Process.this.pieces);
 						if(!r.isEmpty()) {
-							send(ActualMsg.makeInterested());
+							send(ActualMsg.makeInterested()); //send interested messages
 							this.interested = true;
 						}
 
@@ -591,7 +592,7 @@ class Process{
 							//System.out.println("sent request for piece: " + indices.get(n));
 						}
 					}
-					
+
 					if(Process.this.self.hasFile && this.host.hasFile) {
 						break;
 					}
@@ -637,7 +638,7 @@ public class PeerProcess {
 			return;
 		}
 		//System.out.println("Config files read");
-		
+
 		//now that config files are read need to start the process
 
 		p.start();

@@ -1,1 +1,1 @@
-java -cp ../main/java/ org.ufl.cnt4007.PeerProcess 1001
+java -cp ../main/java/ org.ufl.cnt4007.PeerProcess $1
