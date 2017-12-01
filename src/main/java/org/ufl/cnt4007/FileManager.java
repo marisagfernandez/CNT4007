@@ -30,7 +30,7 @@ public class FileManager {
 
 		try{
 			FileInputStream f = new FileInputStream(file);
-			for(int i = 0; i < numPieces; i++){
+			for(int i = 0; i < numPieces - 1; i++){
 				byte[] b = new byte[pieceSize];
 				
 				//Read in the data from main file
@@ -41,13 +41,20 @@ public class FileManager {
 					FileOutputStream outputStream = new FileOutputStream("./peer_"+String.valueOf(peerID)+"/"+"piece" + String.valueOf(i), false);
 					//Write the data to the file representing the piece
 					outputStream.write(b);
-				
+					outputStream.close();
 				}catch (IOException e){
 					System.out.println("ERROR in creating piece");
 					e.printStackTrace();
 					throw new IOException();
-				}				
+				}
+				
 			}
+			
+			long rem = file.length() % pieceSize; 
+			byte[] b = new byte[(int)rem];
+			f.read(b);
+			FileOutputStream outputStream = new FileOutputStream("./peer_"+String.valueOf(peerID)+"/"+"piece" + String.valueOf(numPieces - 1), false);
+			outputStream.write(b);
 			
 		}catch (IOException e){
 			System.out.println("ERROR in reading file");
