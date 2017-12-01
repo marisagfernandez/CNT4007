@@ -29,10 +29,10 @@ public class FileManager {
 	public void makePieces (File file) throws IOException{
 
 		try{
-			byte[] b = new byte[pieceSize];
 			FileInputStream f = new FileInputStream(file);
-			
 			for(int i = 0; i < numPieces; i++){
+				byte[] b = new byte[pieceSize];
+				
 				//Read in the data from main file
 				f.read(b);
 				//Create new file for the piece
@@ -46,8 +46,7 @@ public class FileManager {
 					System.out.println("ERROR in creating piece");
 					e.printStackTrace();
 					throw new IOException();
-				}	
-				
+				}				
 			}
 			
 		}catch (IOException e){
