@@ -13,7 +13,7 @@ public class Logger {
 		try {
 			this.f = new FileOutputStream("log_peer_" + id + ".log", false);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			
 			System.out.println("ERROR: Unable to create log file");
 			e.printStackTrace();
 		}
@@ -32,7 +32,7 @@ public class Logger {
 		try {
 			f.close();
 		} catch (Exception e) {
-			//who cares?
+			
 		}
 	}
 }

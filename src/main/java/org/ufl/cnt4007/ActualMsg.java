@@ -22,7 +22,7 @@ public class ActualMsg {
 	
 	
 	public ActualMsg(byte[] payload) {
-		//ByteBuffer bytes = ByteBuffer.wrap(payload);
+		
 		this.msgType = typeValues[payload[0]];
 		if(payload.length > 1) {
 			this.payload = Arrays.copyOfRange(payload, 1, payload.length);
@@ -42,7 +42,7 @@ public class ActualMsg {
 	
 	public ActualMsg(int length, int type){
 		this.length = length;
-		//this.payload = payload;
+		
 	}
 	
 	public int getLength() {
@@ -52,17 +52,6 @@ public class ActualMsg {
 	public void setLength(int length) {
 		this.length = length;
 	}
-
-//	public synchronized byte[] getPayload() {
-//		if(payload != null){
-//			return payload;
-//		}
-//		return payload;
-//	}
-//
-//	public synchronized void setPayload(byte[] payload) {
-//		this.payload = payload;
-//	}
 	
 	public static byte[] makeChoke() {
 		ByteBuffer bytes = ByteBuffer.allocate(5);

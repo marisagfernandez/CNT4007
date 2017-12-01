@@ -8,22 +8,22 @@ import java.io.IOException;
 
 public class FileManager {
 
-	//private File file;
+
 	private int pieceSize;
 	private int numPieces;
 	private int peerID;
-	//private byte[] piece;
+	
 	
 	public FileManager (){
 		
 	}
 	
 	public FileManager(int pieceSize, int numPieces, int peerID){
-		//this.file = file;
+		
 		this.pieceSize = pieceSize;
 		this.numPieces = numPieces;
 		this.peerID = peerID;
-		//this.piece = piece;
+		
 	}
 	
 	public void makePieces (File file) throws IOException{
@@ -36,12 +36,12 @@ public class FileManager {
 				//Read in the data from main file
 				f.read(b);
 				//Create new file for the piece
-				//File piece = new File("./peer_"+String.valueOf(peerID)+"/","piece" + String.valueOf(i+1));
+				
 				try{
 					FileOutputStream outputStream = new FileOutputStream("./peer_"+String.valueOf(peerID)+"/"+"piece" + String.valueOf(i), false);
 					//Write the data to the file representing the piece
 					outputStream.write(b);
-					//outputStream.close();
+					
 				}catch (IOException e){
 					System.out.println("ERROR in creating piece");
 					e.printStackTrace();
@@ -81,7 +81,7 @@ public class FileManager {
 	
 	public void savePiece(byte[] piece, int pieceNum) throws IOException{
 		try {
-			//File file = new File("./peer_"+String.valueOf(peerID),"piece"+String.valueOf(pieceNum));
+			
 			FileOutputStream outputStream = new FileOutputStream("./peer_"+String.valueOf(peerID)+"/piece"+String.valueOf(pieceNum), false);
 			outputStream.write(piece);
 
@@ -116,27 +116,5 @@ public class FileManager {
 		}
 	
 	}
-
-	
-	
-	/*public static void main(String[] args) {
-		
-		File f = new File("Hello.rtf");
-		
-		File f2 = new File("Hello2.rtf");
-		
-		
-		int pieceSize = 119;
-		int numPieces = 3;
-		int peerID = 1001;
-		try{
-			makePieces();
-			//writePiecesToFile(f2, pieceSize, numPieces);
-		}catch(IOException e){
-			System.out.println("Error!");
-			e.printStackTrace();
-		}
-
-	}*/
 
 }

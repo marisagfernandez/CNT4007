@@ -11,18 +11,18 @@ public class Handshake {
 	private static final byte[] zeroBytes = {0,0,0,0,0,0,0,0,0,0};
 	
 
-	//private byte[] header;
+	
 	private byte[] zeroBits;
 	private int peerID;
 	
 	
 	public Handshake(){
-		//header = new byte[18];
+		
 		zeroBits = new byte[10];
 	}
 	
 	public Handshake(byte[] header, byte[] zeroBits, int peerID){
-		//this.header = header;
+		
 		this.zeroBits = zeroBits;
 		this.peerID = peerID;
 		
@@ -31,11 +31,6 @@ public class Handshake {
 
 	public byte[] getHeader() {
 		return header;
-	}
-
-
-	public void setHeader(byte[] header) {
-		//this.header = header;
 	}
 
 
@@ -87,7 +82,7 @@ public class Handshake {
 		
 		byte[] headerCheck = new byte[18];
 		System.arraycopy(b, 0, headerCheck, 0, headerCheck.length);
-		//ByteBuffer bbHeader = ByteBuffer.wrap(header);
+		
 		Arrays.equals(header, headerCheck);
 		
 		if (Arrays.equals(header, headerCheck) && pId == peerID){

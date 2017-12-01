@@ -242,7 +242,7 @@ class Process{
 			try {
 				Socket socket = new Socket(host.hostname, host.port);
 				socket.setTcpNoDelay(true);
-				Handler handler = new Handler(host,socket, true);
+				Handler handler = new Handler(host,socket);
 				handler.start();
 				handlers.add(handler);
 				//LOG: outwards tcp connection
@@ -251,7 +251,7 @@ class Process{
 			} catch (UnknownHostException e) {
 				System.out.println("Unable to connect to host : " + host.hostname);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 		}
@@ -261,7 +261,7 @@ class Process{
 				Socket tempSocket = ss.accept();
 				tempSocket.setTcpNoDelay(true);
 
-				Handler handler = new Handler(host,tempSocket,true);
+				Handler handler = new Handler(host,tempSocket);
 				handler.start();
 				handlers.add(handler);
 				//LOG: inwards tcp connection
@@ -269,8 +269,6 @@ class Process{
 
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			//shouldn't reach here, look into adding code to fix if it does
 			e.printStackTrace();
 		}
 	}
@@ -315,7 +313,7 @@ class Process{
 			//parsing each line for [peer id] [host-name] [port] [has-file]
 			String[] tokens = line.split(" ");
 			//for now, just parse the string into a host object.
-			//TODO: Add connections
+			
 			Host h = new Host();
 			h.id = Integer.parseInt(tokens[0]);
 			h.hostname = tokens[1];
@@ -361,12 +359,12 @@ class Process{
 		private boolean requesting;
 		boolean interested;
 		int pieces_received;
-		Handler(Host h, Socket s, boolean initiator){
-			this.choked = true; //EDIT
+		Handler(Host h, Socket s){
+			this.choked = true; 
 			msgQ = new ArrayBlockingQueue<byte[]>(1024); //arbitrarily chosen data structure
 			this.host = h;
 			this.socket = s;
-			this.initiator = initiator; //initiator is supposed to send first handshake? or can this be done async?
+			
 			try {
 				this.incoming = new DataInputStream(socket.getInputStream());
 				this.outgoing = new DataOutputStream(socket.getOutputStream());
@@ -393,7 +391,7 @@ class Process{
 			}
 		}
 		private byte[] receive() throws IOException {
-			//System.out.print("receive called with: " + incoming.available() + " bytes available.");
+			
 			if(incoming.available() == 0) {
 				return null;
 			}
@@ -428,17 +426,17 @@ class Process{
 
 				//now entering message handling loop
 				while(true) {
-					//System.out.println("Loop start");
+					
 					//check for messages to send from main process
 					while(!msgQ.isEmpty()) {
 						send(msgQ.poll());
 					}
 					//check for incoming messages
 					if(incoming.available() > 0) {
-						//System.out.println("Something is available");
+						
 						byte[] recv = receive();
-						//System.out.println("received!");
-						if (recv == null) { //TODO: pull msg receiving into another function
+						
+						if (recv == null) { 
 							continue;
 						}
 						ActualMsg m = new ActualMsg(recv);
@@ -479,7 +477,7 @@ class Process{
 						}
 						if(msgType == ActualMsg.Type.REQUEST) {
 							byte[] req_payload = m.getPayload();
-							//System.out.println("request payload size: " + payload.length);
+							
 							if(req_payload.length != 4) {
 								System.out.println("Improper request payload received from + " + this.host.hostname);
 								continue;
@@ -493,7 +491,7 @@ class Process{
 
 								send(ActualMsg.makePiece(index,piece));
 							} else {
-								//System.out.println("Received request from choked host");
+								
 							}
 						}
 						if(msgType == ActualMsg.Type.PIECE) {
@@ -577,19 +575,14 @@ class Process{
 							send(ActualMsg.makeNotInterested());
 							continue;
 						} else {
-							/*System.out.print("Current bitset is: ");
-							for(int i : indices) {
-								System.out.print(i + " ");
-							}
-							System.out.println();
-							*/
+							
 							//select randomly
 							Random rando = new Random();
-							//System.out.print((indices.size()));
+							
 							int n = rando.nextInt(indices.size());
 							byte [] msg = ActualMsg.makeRequest(indices.get(n));
 							send(msg);
-							//System.out.println("sent request for piece: " + indices.get(n));
+							
 						}
 					}
 
@@ -597,12 +590,7 @@ class Process{
 						break;
 					}
 				}
-				/*try {
-					//wait(5);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}*/
+				
 
 			} catch(IOException e){
 
@@ -615,7 +603,7 @@ class Process{
 					this.outgoing.close();
 				} catch (Exception e) {
 
-					//e.printStackTrace();
+					e.printStackTrace();
 				}
 
 			}
@@ -632,12 +620,12 @@ public class PeerProcess {
 		Process p;
 		try{
 			p = new Process(Integer.parseInt(args[0])); //args start from 0 in java (program name not included)
-			//System.out.println(p.fileName);
+			
 		} catch (Exception e){
 			e.printStackTrace();
 			return;
 		}
-		//System.out.println("Config files read");
+		
 
 		//now that config files are read need to start the process
 
