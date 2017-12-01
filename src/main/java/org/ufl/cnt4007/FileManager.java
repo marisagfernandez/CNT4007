@@ -41,7 +41,7 @@ public class FileManager {
 					FileOutputStream outputStream = new FileOutputStream("./peer_"+String.valueOf(peerID)+"/"+"piece" + String.valueOf(i), false);
 					//Write the data to the file representing the piece
 					outputStream.write(b);
-					outputStream.close();
+					//outputStream.close();
 				}catch (IOException e){
 					System.out.println("ERROR in creating piece");
 					e.printStackTrace();
@@ -53,8 +53,8 @@ public class FileManager {
 			long rem = file.length() % pieceSize; 
 			byte[] b = new byte[(int)rem];
 			f.read(b);
-			FileOutputStream outputStream = new FileOutputStream("./peer_"+String.valueOf(peerID)+"/"+"piece" + String.valueOf(numPieces - 1), false);
-			outputStream.write(b);
+			FileOutputStream outputStream2 = new FileOutputStream("./peer_"+String.valueOf(peerID)+"/"+"piece" + String.valueOf(numPieces - 1), false);
+			outputStream2.write(b);
 			
 		}catch (IOException e){
 			System.out.println("ERROR in reading file");
