@@ -534,7 +534,7 @@ class Process{
 						if(msgType == ActualMsg.Type.UNCHOKE) {
 							this.choked = false;
 							Process.this.log.log("Peer " + Process.this.id + " is unchoked by " + this.host.id);
-							System.out.println("Debug: received UNCHOKE");
+							//System.out.println("Debug: received UNCHOKE");
 						}
 						if(msgType == ActualMsg.Type.CHOKE) {
 							this.requesting = false;
